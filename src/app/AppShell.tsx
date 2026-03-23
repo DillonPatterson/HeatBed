@@ -25,6 +25,7 @@ interface AppShellProps {
   sleepers: Sleeper[];
   selectedSleeper?: Sleeper;
   selectedSleeperId: string | null;
+  poseEditing: boolean;
   worldSegmentsBySleeper: Record<string, WorldSegment[]>;
   heatField: HeatField;
   insights: string[];
@@ -45,6 +46,7 @@ interface AppShellProps {
   onSetType: (id: string, type: SleeperType) => void;
   onSetBreed: (id: string, breedId?: string) => void;
   onApplyPosePreset: (id: string, posePresetId: string) => void;
+  onTogglePoseEditing: () => void;
   onSetRotation: (id: string, rotationDeg: number) => void;
   onSetSegmentAngle: (id: string, segmentId: string, angle: number) => void;
   onMoveSleeper: (id: string, point: { x: number; y: number }) => void;
@@ -61,6 +63,7 @@ export const AppShell = ({
   sleepers,
   selectedSleeper,
   selectedSleeperId,
+  poseEditing,
   worldSegmentsBySleeper,
   heatField,
   insights,
@@ -78,6 +81,7 @@ export const AppShell = ({
   onSetType,
   onSetBreed,
   onApplyPosePreset,
+  onTogglePoseEditing,
   onSetRotation,
   onSetSegmentAngle,
   onMoveSleeper,
@@ -98,7 +102,7 @@ export const AppShell = ({
           hotspot est. {formatRange(heatField.summary.hotspot.absoluteRangeF, unit)}
         </div>
         <div className="badge" style={{ opacity: 0.72, fontSize: '0.6rem' }}>
-          modeled estimate - not measured
+          modeled estimate · not measured
         </div>
         <div className="unit-toggle">
           {(['F', 'C'] as const).map((nextUnit) => (
@@ -144,6 +148,8 @@ export const AppShell = ({
         onSetType={onSetType}
         onSetBreed={onSetBreed}
         onApplyPosePreset={onApplyPosePreset}
+        poseEditing={poseEditing}
+        onTogglePoseEditing={onTogglePoseEditing}
         onSetRotation={onSetRotation}
         onSetSegmentAngle={onSetSegmentAngle}
       />
@@ -159,6 +165,7 @@ export const AppShell = ({
         unit={unit}
         sleepers={sleepers}
         selectedSleeperId={selectedSleeperId}
+        poseEditing={poseEditing}
         worldSegmentsBySleeper={worldSegmentsBySleeper}
         heatField={heatField}
         onSelectSleeper={onSelectSleeper}

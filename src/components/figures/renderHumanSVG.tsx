@@ -1,6 +1,6 @@
 import { resolveSleeperPreset } from '../../simulation/presets/resolveSleeperPreset';
 import type { Sleeper, WorldSegment } from '../../types';
-import { capsulePath, darkenHex, limbEllipse, midpoint, polarOffset, segmentById } from './figureSvgUtils';
+import { capsulePath, darkenHex, polarOffset, segmentById } from './figureSvgUtils';
 
 export const renderHumanSVG = (
   segments: WorldSegment[],
@@ -27,17 +27,48 @@ export const renderHumanSVG = (
   const stroke = darkenHex(sleeper.color, 0.15);
   const shadowId = `figure-shadow-${sleeper.id}`;
   const haloId = `figure-halo-${sleeper.id}`;
-  const torsoPath = capsulePath(
-    { x: torso.cx, y: torso.cy },
-    torso.length * 0.96 * lengthScale,
-    torso.width * 1.02 * widthScale,
-    torso.angleDeg,
-  );
-  const shoulderCenter = midpoint({ x: torso.x1, y: torso.y1 }, { x: torso.cx, y: torso.cy });
-  const hipCenter = midpoint({ x: torso.cx, y: torso.cy }, { x: torso.x2, y: torso.y2 });
   const bodyAngle = torso.angleDeg;
-  const foreheadLeft = polarOffset({ x: head.cx, y: head.cy }, head.width * 0.12, bodyAngle - 90);
-  const foreheadRight = polarOffset({ x: head.cx, y: head.cy }, head.width * 0.12, bodyAngle + 90);
+  const sizeScale = Math.min(1.08, Math.max(0.72, bedScale * Math.sqrt(lengthScale)));
+  const torsoWidth = 6.1 * widthScale * sizeScale;
+  const shoulderWidth = torsoWidth * 0.95;
+  const waistWidth = torsoWidth * 0.64;
+  const hipWidth = torsoWidth * 0.7;
+  const bodyTop = -5.9 * sizeScale;
+  const shoulderY = -4.2 * sizeScale;
+  const waistY = 0.8 * sizeScale;
+  const hipY = 5.3 * sizeScale;
+  const bodyBottom = 8.5 * sizeScale;
+  const headCy = -8.35 * sizeScale;
+  const headRx = 1.85 * widthScale * sizeScale;
+  const headRy = 1.65 * sizeScale;
+  const torsoPath = [
+    `M ${-shoulderWidth / 2} ${bodyTop + 0.9 * sizeScale}`,
+    `Q ${-shoulderWidth * 0.62} ${shoulderY} ${-waistWidth / 2} ${waistY}`,
+    `Q ${-hipWidth / 2} ${hipY} ${-1.55 * sizeScale} ${bodyBottom}`,
+    `Q 0 ${bodyBottom + 0.65 * sizeScale} ${1.55 * sizeScale} ${bodyBottom}`,
+    `Q ${hipWidth / 2} ${hipY} ${waistWidth / 2} ${waistY}`,
+    `Q ${shoulderWidth * 0.62} ${shoulderY} ${shoulderWidth / 2} ${bodyTop + 0.9 * sizeScale}`,
+    `Q ${2.05 * sizeScale} ${bodyTop - 1.15 * sizeScale} 0 ${bodyTop - 1.15 * sizeScale}`,
+    `Q ${-2.05 * sizeScale} ${bodyTop - 1.15 * sizeScale} ${-shoulderWidth / 2} ${bodyTop + 0.9 * sizeScale}`,
+    'Z',
+  ].join(' ');
+
+  const leftArmAngle = (leftArm?.angleDeg ?? bodyAngle + 118) - bodyAngle;
+  const rightArmAngle = (rightArm?.angleDeg ?? bodyAngle + 62) - bodyAngle;
+  const leftLegAngle = (leftLeg?.angleDeg ?? bodyAngle + 112) - bodyAngle;
+  const rightLegAngle = (rightLeg?.angleDeg ?? bodyAngle + 68) - bodyAngle;
+  const armLength = 6.3 * lengthScale * sizeScale;
+  const armWidth = 1.6 * widthScale * sizeScale;
+  const legLength = 7.2 * lengthScale * sizeScale;
+  const legWidth = 1.85 * widthScale * sizeScale;
+  const leftShoulder = { x: -shoulderWidth * 0.44, y: shoulderY + 0.55 * sizeScale };
+  const rightShoulder = { x: shoulderWidth * 0.44, y: shoulderY + 0.55 * sizeScale };
+  const leftHip = { x: -hipWidth * 0.22, y: hipY - 0.2 * sizeScale };
+  const rightHip = { x: hipWidth * 0.22, y: hipY - 0.2 * sizeScale };
+  const leftArmCenter = polarOffset(leftShoulder, armLength / 2, leftArmAngle);
+  const rightArmCenter = polarOffset(rightShoulder, armLength / 2, rightArmAngle);
+  const leftLegCenter = polarOffset(leftHip, legLength / 2, leftLegAngle);
+  const rightLegCenter = polarOffset(rightHip, legLength / 2, rightLegAngle);
 
   return (
     <g>
@@ -53,76 +84,59 @@ export const renderHumanSVG = (
       {selected ? (
         <ellipse
           cx={torso.cx}
-          cy={torso.cy}
-          rx={torso.width * 1.15}
-          ry={torso.length * 0.54}
+          cy={torso.cy + 0.7 * sizeScale}
+          rx={torsoWidth * 1.08}
+          ry={8.8 * sizeScale}
           fill={sleeper.color}
           opacity={0.35}
           filter={`url(#${haloId})`}
-          transform={`rotate(${bodyAngle} ${torso.cx} ${torso.cy})`}
+          transform={`rotate(${bodyAngle} ${torso.cx} ${torso.cy + 0.7 * sizeScale})`}
         />
       ) : null}
 
-      <g filter={`url(#${shadowId})`}>
-        <path d={torsoPath} fill={sleeper.color} stroke={stroke} strokeWidth={0.5} />
+      <g filter={`url(#${shadowId})`} transform={`translate(${torso.cx} ${torso.cy}) rotate(${bodyAngle})`}>
+        <path d={torsoPath} fill={sleeper.color} stroke={stroke} strokeWidth={0.48} />
 
-        {leftArm ? (
-          <ellipse
-            {...limbEllipse(leftArm, widthScale, lengthScale)}
-            fill={sleeper.color}
-            stroke={stroke}
-            strokeWidth={0.42}
-            transform={`rotate(${leftArm.angleDeg} ${leftArm.cx} ${leftArm.cy})`}
-          />
-        ) : null}
-        {rightArm ? (
-          <ellipse
-            {...limbEllipse(rightArm, widthScale, lengthScale)}
-            fill={sleeper.color}
-            stroke={stroke}
-            strokeWidth={0.42}
-            transform={`rotate(${rightArm.angleDeg} ${rightArm.cx} ${rightArm.cy})`}
-          />
-        ) : null}
-        {leftLeg ? (
-          <ellipse
-            {...limbEllipse(leftLeg, widthScale, lengthScale)}
-            fill={sleeper.color}
-            stroke={stroke}
-            strokeWidth={0.44}
-            transform={`rotate(${leftLeg.angleDeg} ${leftLeg.cx} ${leftLeg.cy})`}
-          />
-        ) : null}
-        {rightLeg ? (
-          <ellipse
-            {...limbEllipse(rightLeg, widthScale, lengthScale)}
-            fill={sleeper.color}
-            stroke={stroke}
-            strokeWidth={0.44}
-            transform={`rotate(${rightLeg.angleDeg} ${rightLeg.cx} ${rightLeg.cy})`}
-          />
-        ) : null}
-
-        <ellipse
-          cx={head.cx}
-          cy={head.cy}
-          rx={(head.width * 0.48 * widthScale) / 2}
-          ry={(head.width * 0.57 * lengthScale) / 2}
+        <path
+          d={capsulePath(leftArmCenter, armLength, armWidth, leftArmAngle)}
+          fill={sleeper.color}
+          stroke={stroke}
+          strokeWidth={0.4}
+        />
+        <path
+          d={capsulePath(rightArmCenter, armLength, armWidth, rightArmAngle)}
+          fill={sleeper.color}
+          stroke={stroke}
+          strokeWidth={0.4}
+        />
+        <path
+          d={capsulePath(leftLegCenter, legLength, legWidth, leftLegAngle)}
           fill={sleeper.color}
           stroke={stroke}
           strokeWidth={0.42}
-          transform={`rotate(${bodyAngle} ${head.cx} ${head.cy})`}
+        />
+        <path
+          d={capsulePath(rightLegCenter, legLength, legWidth, rightLegAngle)}
+          fill={sleeper.color}
+          stroke={stroke}
+          strokeWidth={0.42}
         />
 
-        <circle cx={shoulderCenter.x} cy={shoulderCenter.y} r={torso.width * 0.18} fill={sleeper.color} />
-        <circle cx={hipCenter.x} cy={hipCenter.y} r={torso.width * 0.18} fill={sleeper.color} />
+        <ellipse
+          cx={0}
+          cy={headCy}
+          rx={headRx}
+          ry={headRy}
+          fill={sleeper.color}
+          stroke={stroke}
+          strokeWidth={0.42}
+        />
         <path
-          d={`M ${foreheadLeft.x} ${foreheadLeft.y}
-             Q ${head.cx} ${head.cy - head.width * 0.1} ${foreheadRight.x} ${foreheadRight.y}`}
+          d={`M ${-headRx * 0.74} ${headCy + headRy * 0.15} Q 0 ${headCy - headRy * 0.18} ${headRx * 0.74} ${headCy + headRy * 0.15}`}
           fill="none"
           stroke={stroke}
-          strokeOpacity={0.35}
-          strokeWidth={0.22}
+          strokeOpacity={0.3}
+          strokeWidth={0.18}
         />
       </g>
     </g>

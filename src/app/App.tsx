@@ -35,12 +35,19 @@ export default function App() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [intakeType, setIntakeType] = useState<SleeperType | null>(null);
+  const [poseEditingSleeperId, setPoseEditingSleeperId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!selectedSleeperId && sleepers[0]) {
       selectSleeper(sleepers[0].id);
     }
   }, [selectSleeper, selectedSleeperId, sleepers]);
+
+  useEffect(() => {
+    if (poseEditingSleeperId && poseEditingSleeperId !== selectedSleeperId) {
+      setPoseEditingSleeperId(null);
+    }
+  }, [poseEditingSleeperId, selectedSleeperId]);
 
   const simulation = useSimulation({
     sleepers,
@@ -61,6 +68,11 @@ export default function App() {
 
   const handleOpenIntake = (type: SleeperType) => {
     setIntakeType(type);
+  };
+
+  const handleTogglePoseEditing = () => {
+    if (!selectedSleeper) return;
+    setPoseEditingSleeperId((current) => (current === selectedSleeper.id ? null : selectedSleeper.id));
   };
 
   const handleConfirmIntake = ({ type, name, weightLb, thermalTendency, breedId, presentation }: SleeperIntakePayload) => {
@@ -99,6 +111,7 @@ export default function App() {
         sleepers={sleepers}
         selectedSleeper={selectedSleeper}
         selectedSleeperId={selectedSleeperId}
+        poseEditing={selectedSleeper?.id === poseEditingSleeperId}
         worldSegmentsBySleeper={simulation.worldSegmentsBySleeper}
         heatField={simulation.heatField}
         insights={simulation.insights}
@@ -117,6 +130,7 @@ export default function App() {
         onSetType={setSleeperType}
         onSetBreed={setSleeperBreed}
         onApplyPosePreset={applyPosePreset}
+        onTogglePoseEditing={handleTogglePoseEditing}
         onSetRotation={setSleeperRotation}
         onSetSegmentAngle={setSegmentAngle}
         onMoveSleeper={setSleeperPosition}

@@ -59,10 +59,12 @@ export const ControlPanel = (props: ControlPanelProps) => (
 
     <SelectedSleeperCard
       sleeper={props.selectedSleeper}
+      poseEditing={false}
       onUpdateBasics={props.onUpdateBasics}
       onSetType={props.onSetType}
       onSetBreed={props.onSetBreed}
       onApplyPosePreset={props.onApplyPosePreset}
+      onTogglePoseEditing={() => {}}
       onSetRotation={props.onSetRotation}
       onSetSegmentAngle={props.onSetSegmentAngle}
     />

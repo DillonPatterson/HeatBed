@@ -25,30 +25,40 @@ export const renderDogSVG = (
 
   const resolved = resolveSleeperPreset(sleeper);
   const scale = clamp(Math.pow(sleeper.weightLb / resolved.defaultWeightLb, 0.5), 0.55, 1.6);
-  const bodyScale = Math.min(scale * Math.min(bedWidthIn / 60, bedLengthIn / 80), scale * 1.04);
+  const bodyScale = scale * Math.min(bedWidthIn / 60, bedLengthIn / 80);
   const stroke = darkenHex(sleeper.color, 0.15);
   const shadowId = `figure-shadow-${sleeper.id}`;
   const haloId = `figure-halo-${sleeper.id}`;
-  const bodyPath = capsulePath(
-    { x: spine.cx, y: spine.cy },
-    spine.length * 1.16 * bodyScale,
-    spine.width * 1.02 * bodyScale,
-    spine.angleDeg,
-  );
-  const chestCenter = polarOffset({ x: spine.cx, y: spine.cy }, spine.length * 0.12, spine.angleDeg + 180);
-  const hipCenter = polarOffset({ x: spine.cx, y: spine.cy }, spine.length * 0.18, spine.angleDeg);
-  const frontAngle = neck?.angleDeg ?? Math.atan2(head.cy - spine.cy, head.cx - spine.cx) * (180 / Math.PI);
-  const snoutBase = polarOffset({ x: head.cx, y: head.cy }, head.width * 0.15 * scale, frontAngle + 180);
-  const snoutTip = polarOffset({ x: head.cx, y: head.cy }, head.width * 0.42 * scale, frontAngle);
-  const snoutTop = polarOffset(snoutBase, head.width * 0.18 * scale, frontAngle - 90);
-  const snoutBottom = polarOffset(snoutBase, head.width * 0.18 * scale, frontAngle + 90);
-  const tailStart = { x: tail?.x1 ?? spine.x2, y: tail?.y1 ?? spine.y2 };
-  const tailMid = polarOffset(tailStart, 3.2 * scale, (tail?.angleDeg ?? spine.angleDeg) - 20);
-  const tailTip = polarOffset(tailStart, 6.1 * scale, tail?.angleDeg ?? spine.angleDeg);
-
-  const legNodes = [frontLeftLeg, frontRightLeg, hindLeftLeg, hindRightLeg].filter(
-    (segment): segment is WorldSegment => Boolean(segment),
-  );
+  const bodyAngle = spine.angleDeg;
+  const lengthScale = Math.sqrt(resolved.species.lengthScale * resolved.lengthMultiplier) * bodyScale;
+  const widthScale = Math.sqrt(resolved.species.widthScale * resolved.widthMultiplier) * bodyScale;
+  const bodyLength = 13.8 * lengthScale;
+  const bodyWidth = 5.2 * widthScale;
+  const frontAngle = (neck?.angleDeg ?? head.angleDeg ?? bodyAngle) - bodyAngle;
+  const tailAngle = (tail?.angleDeg ?? bodyAngle + 12) - bodyAngle;
+  const frontLegLeftAngle = (frontLeftLeg?.angleDeg ?? bodyAngle + 118) - bodyAngle;
+  const frontLegRightAngle = (frontRightLeg?.angleDeg ?? bodyAngle + 62) - bodyAngle;
+  const hindLegLeftAngle = (hindLeftLeg?.angleDeg ?? bodyAngle + 122) - bodyAngle;
+  const hindLegRightAngle = (hindRightLeg?.angleDeg ?? bodyAngle + 58) - bodyAngle;
+  const bodyPath = capsulePath({ x: 0, y: 0 }, bodyLength, bodyWidth, 0);
+  const chestCenter = { x: -bodyLength * 0.2, y: -bodyWidth * 0.03 };
+  const hipCenter = { x: bodyLength * 0.22, y: bodyWidth * 0.04 };
+  const headCenter = polarOffset({ x: -bodyLength * 0.56, y: -0.1 * widthScale }, 1.1 * widthScale, frontAngle);
+  const headRx = 2.15 * widthScale;
+  const headRy = 1.55 * widthScale;
+  const snoutBase = polarOffset(headCenter, headRx * 0.12, frontAngle);
+  const snoutTip = polarOffset(headCenter, headRx * 1.35, frontAngle);
+  const snoutTop = polarOffset(snoutBase, headRy * 0.65, frontAngle - 90);
+  const snoutBottom = polarOffset(snoutBase, headRy * 0.65, frontAngle + 90);
+  const tailStart = { x: bodyLength * 0.52, y: -bodyWidth * 0.05 };
+  const tailMid = polarOffset(tailStart, 3.4 * widthScale, tailAngle - 18);
+  const tailTip = polarOffset(tailMid, 3.2 * widthScale, tailAngle + 8);
+  const legLength = 3.8 * lengthScale;
+  const legWidth = 1.12 * widthScale;
+  const frontLeftCenter = polarOffset({ x: -bodyLength * 0.22, y: -bodyWidth * 0.26 }, legLength / 2, frontLegLeftAngle);
+  const frontRightCenter = polarOffset({ x: -bodyLength * 0.12, y: bodyWidth * 0.28 }, legLength / 2, frontLegRightAngle);
+  const hindLeftCenter = polarOffset({ x: bodyLength * 0.22, y: -bodyWidth * 0.28 }, legLength / 2, hindLegLeftAngle);
+  const hindRightCenter = polarOffset({ x: bodyLength * 0.3, y: bodyWidth * 0.28 }, legLength / 2, hindLegRightAngle);
 
   return (
     <g>
@@ -65,74 +75,62 @@ export const renderDogSVG = (
         <ellipse
           cx={spine.cx}
           cy={spine.cy}
-          rx={spine.length * 0.48 * bodyScale}
-          ry={spine.width * 0.82 * bodyScale}
+          rx={bodyLength * 0.62}
+          ry={bodyWidth * 0.9}
           fill={sleeper.color}
           opacity={0.35}
           filter={`url(#${haloId})`}
-          transform={`rotate(${spine.angleDeg} ${spine.cx} ${spine.cy})`}
+          transform={`rotate(${bodyAngle} ${spine.cx} ${spine.cy})`}
         />
       ) : null}
 
-      <g filter={`url(#${shadowId})`}>
-        <path d={bodyPath} fill={sleeper.color} stroke={stroke} strokeWidth={0.46} />
+      <g filter={`url(#${shadowId})`} transform={`translate(${spine.cx} ${spine.cy}) rotate(${bodyAngle})`}>
+        <path d={bodyPath} fill={sleeper.color} stroke={stroke} strokeWidth={0.52} />
         <ellipse
           cx={chestCenter.x}
           cy={chestCenter.y}
-          rx={spine.width * 0.34 * bodyScale}
-          ry={spine.width * 0.42 * bodyScale}
+          rx={bodyWidth * 0.34}
+          ry={bodyWidth * 0.4}
           fill={sleeper.color}
           stroke={stroke}
           strokeWidth={0.34}
-          transform={`rotate(${spine.angleDeg} ${chestCenter.x} ${chestCenter.y})`}
         />
         <ellipse
           cx={hipCenter.x}
           cy={hipCenter.y}
-          rx={spine.width * 0.3 * bodyScale}
-          ry={spine.width * 0.36 * bodyScale}
+          rx={bodyWidth * 0.3}
+          ry={bodyWidth * 0.34}
           fill={sleeper.color}
           stroke={stroke}
           strokeWidth={0.34}
-          transform={`rotate(${spine.angleDeg} ${hipCenter.x} ${hipCenter.y})`}
         />
-
-        {legNodes.map((segment) => (
-          <ellipse
-            key={segment.segmentId}
-            cx={segment.cx}
-            cy={segment.cy}
-            rx={Math.max(0.8, segment.width * 0.45 * scale)}
-            ry={Math.max(1.5, segment.length * 0.2 * scale)}
-            fill={sleeper.color}
-            stroke={stroke}
-            strokeWidth={0.3}
-            transform={`rotate(${segment.angleDeg} ${segment.cx} ${segment.cy})`}
-          />
-        ))}
+        <path d={capsulePath(frontLeftCenter, legLength, legWidth, frontLegLeftAngle)} fill={sleeper.color} stroke={stroke} strokeWidth={0.28} />
+        <path d={capsulePath(frontRightCenter, legLength, legWidth, frontLegRightAngle)} fill={sleeper.color} stroke={stroke} strokeWidth={0.28} />
+        <path d={capsulePath(hindLeftCenter, legLength, legWidth, hindLegLeftAngle)} fill={sleeper.color} stroke={stroke} strokeWidth={0.28} />
+        <path d={capsulePath(hindRightCenter, legLength, legWidth, hindLegRightAngle)} fill={sleeper.color} stroke={stroke} strokeWidth={0.28} />
 
         <ellipse
-          cx={head.cx}
-          cy={head.cy}
-          rx={head.width * 0.34 * scale}
-          ry={head.width * 0.28 * scale}
+          cx={headCenter.x}
+          cy={headCenter.y}
+          rx={headRx}
+          ry={headRy}
           fill={sleeper.color}
           stroke={stroke}
           strokeWidth={0.34}
-          transform={`rotate(${frontAngle} ${head.cx} ${head.cy})`}
+          transform={`rotate(${frontAngle} ${headCenter.x} ${headCenter.y})`}
         />
         <path
           d={`M ${snoutTop.x} ${snoutTop.y} L ${snoutTip.x} ${snoutTip.y} L ${snoutBottom.x} ${snoutBottom.y} Q ${snoutBase.x} ${snoutBase.y} ${snoutTop.x} ${snoutTop.y} Z`}
           fill={sleeper.color}
           stroke={stroke}
-          strokeWidth={0.26}
+          strokeWidth={0.24}
         />
         <path
           d={`M ${tailStart.x} ${tailStart.y} Q ${tailMid.x} ${tailMid.y} ${tailTip.x} ${tailTip.y}`}
           fill="none"
           stroke={stroke}
           strokeLinecap="round"
-          strokeWidth={Math.max(0.42, 0.9 * scale)}
+          strokeWidth={Math.max(0.42, 0.86 * widthScale)}
         />
       </g>
     </g>

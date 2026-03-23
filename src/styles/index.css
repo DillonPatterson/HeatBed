@@ -66,21 +66,6 @@ body {
   background-attachment: fixed;
 }
 
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0,
-    transparent 3px,
-    rgba(0, 0, 0, 0.05) 3px,
-    rgba(0, 0, 0, 0.05) 4px
-  );
-}
-
 .app-shell {
   display: grid;
   grid-template-rows: 52px 1fr;
@@ -635,19 +620,17 @@ input[type='range']::-moz-range-thumb {
 .stage-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 0.75rem;
   flex-shrink: 0;
   flex-wrap: wrap;
 }
 
-.stage-title {
-  font-family: var(--font-mono);
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-lo);
+.stage-badges {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .stage-scene {
@@ -656,34 +639,12 @@ input[type='range']::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, rgba(8, 10, 16, 0.9), rgba(10, 13, 20, 0.82));
+  border: 1px solid rgba(255, 255, 255, 0.045);
   border-radius: var(--radius-lg);
-  padding: 1rem;
+  padding: 1.2rem;
   position: relative;
   overflow: hidden;
-}
-
-.stage-scene::before,
-.stage-scene::after {
-  content: '';
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-color: rgba(247, 198, 107, 0.2);
-  border-style: solid;
-}
-
-.stage-scene::before {
-  top: 10px;
-  left: 10px;
-  border-width: 1px 0 0 1px;
-}
-
-.stage-scene::after {
-  bottom: 10px;
-  right: 10px;
-  border-width: 0 1px 1px 0;
 }
 
 .bed-wrap {
@@ -695,11 +656,11 @@ input[type='range']::-moz-range-thumb {
 }
 
 .bed-headboard {
-  width: 90%;
-  height: clamp(28px, 5%, 52px);
-  background: linear-gradient(180deg, rgba(60, 55, 80, 0.7) 0%, rgba(36, 32, 52, 0.5) 100%);
-  border-radius: 14px 14px 0 0;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  width: 84%;
+  height: clamp(28px, 5%, 56px);
+  background: linear-gradient(180deg, rgba(93, 88, 111, 0.78) 0%, rgba(55, 48, 72, 0.58) 100%);
+  border-radius: 18px 18px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.11);
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -716,16 +677,17 @@ input[type='range']::-moz-range-thumb {
 
 .bed-mattress {
   position: relative;
-  width: 90%;
+  width: 84%;
   overflow: hidden;
-  border-radius: 0 0 22px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0 0 24px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background:
-    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.045), transparent 30%),
-    linear-gradient(180deg, #201a2a 0%, #131826 55%, #0e1120 100%);
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.04), transparent 30%),
+    linear-gradient(180deg, #241d2d 0%, #171b2a 50%, #101421 100%);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 40px 90px rgba(0, 0, 0, 0.55);
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 34px 80px rgba(0, 0, 0, 0.48);
 }
 
 .bed-pillows {
@@ -754,8 +716,8 @@ input[type='range']::-moz-range-thumb {
   z-index: 1;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.016) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
   background-size: 12.5% 10%;
 }
 
@@ -777,6 +739,31 @@ input[type='range']::-moz-range-thumb {
   display: flex;
   gap: 0.6rem;
   align-items: stretch;
+}
+
+.chip-btn {
+  border: 1px solid var(--border-mid);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.48rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+  transition: all 120ms;
+}
+
+.chip-btn:hover {
+  border-color: rgba(247, 198, 107, 0.28);
+  color: var(--warm);
+}
+
+.chip-btn.is-active {
+  border-color: rgba(255, 107, 53, 0.32);
+  background: rgba(255, 107, 53, 0.1);
+  color: #ffb48a;
 }
 
 .modal-backdrop {

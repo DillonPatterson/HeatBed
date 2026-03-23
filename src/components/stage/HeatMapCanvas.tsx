@@ -60,25 +60,25 @@ export const HeatMapCanvas = ({ heatField, blanket }: HeatMapCanvasProps) => {
     oCtx.putImageData(imageData, 0, 0);
 
     // Soft blur pass
-    const blurPx = Math.max(width, height) * 0.018;
+    const blurPx = Math.max(width, height) * 0.0115;
     ctx.save();
     ctx.filter = `blur(${blurPx.toFixed(1)}px)`;
-    ctx.globalAlpha = 0.88;
+    ctx.globalAlpha = 0.76;
     ctx.drawImage(offscreen, 0, 0, width, height);
     ctx.restore();
 
     // Second sharper pass
     ctx.save();
     ctx.filter = `blur(${(blurPx * 0.4).toFixed(1)}px)`;
-    ctx.globalAlpha = 0.55;
+    ctx.globalAlpha = 0.42;
     ctx.globalCompositeOperation = 'screen';
     ctx.drawImage(offscreen, 0, 0, width, height);
     ctx.restore();
 
     // Bloom for hottest cells
     ctx.save();
-    ctx.filter = `blur(${(blurPx * 3).toFixed(1)}px)`;
-    ctx.globalAlpha = 0.28;
+    ctx.filter = `blur(${(blurPx * 1.8).toFixed(1)}px)`;
+    ctx.globalAlpha = 0.14;
     ctx.globalCompositeOperation = 'screen';
     ctx.drawImage(offscreen, 0, 0, width, height);
     ctx.restore();

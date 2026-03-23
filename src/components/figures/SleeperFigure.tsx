@@ -53,18 +53,17 @@ const JointHandle = ({
         y1={pivot.y}
         x2={target.x}
         y2={target.y}
-        stroke="rgba(255, 243, 218, 0.38)"
-        strokeDasharray="1.1 1.1"
-        strokeWidth={0.22}
+        stroke="rgba(255, 243, 218, 0.22)"
+        strokeWidth={0.16}
       />
       <circle
         {...bindJoint()}
         cx={target.x}
         cy={target.y}
-        r={1.28}
-        fill="#f6c990"
+        r={1.04}
+        fill="#f2c383"
         stroke="#6d4120"
-        strokeWidth={0.22}
+        strokeWidth={0.18}
       />
     </g>
   );
@@ -77,6 +76,7 @@ interface SleeperFigureProps {
   bedWidthIn: number;
   bedLengthIn: number;
   selected: boolean;
+  poseEditing: boolean;
   onSelect: () => void;
   onMove: (point: Point) => void;
   onRotate: (angleDeg: number) => void;
@@ -90,6 +90,7 @@ export const SleeperFigure = ({
   bedWidthIn,
   bedLengthIn,
   selected,
+  poseEditing,
   onSelect,
   onMove,
   onRotate,
@@ -136,12 +137,14 @@ export const SleeperFigure = ({
   }, [centroid.x, centroid.y, segmentMap]);
 
   const rotationHandle = useMemo(() => {
-    const offset = rotateVector({ x: 0, y: -11 }, sleeper.rotationDeg);
+    const offset = rotateVector({ x: 0, y: -10 }, sleeper.rotationDeg);
     return {
       x: centroid.x + offset.x,
       y: centroid.y + offset.y,
     };
   }, [centroid.x, centroid.y, sleeper.rotationDeg]);
+
+  const labelWidth = Math.max(10.5, sleeper.name.length * 1.7 + 4.8);
 
   const bindDrag = useDrag(({ first, movement: [mx, my], event }) => {
     event.stopPropagation();
@@ -198,18 +201,27 @@ export const SleeperFigure = ({
       {visibleFigure}
 
       {selected ? (
-        <text
-          x={labelPoint.x}
-          y={labelPoint.y}
-          textAnchor="middle"
-          className="pointer-events-none font-mono text-[3.2px] font-semibold uppercase tracking-[0.7px]"
-          fill="#fff9ed"
-          stroke="rgba(7, 9, 15, 0.96)"
-          strokeWidth={0.95}
-          paintOrder="stroke"
-        >
-          {sleeper.name}
-        </text>
+        <g className="pointer-events-none" transform={`translate(${labelPoint.x} ${labelPoint.y})`}>
+          <rect
+            x={-labelWidth / 2}
+            y={-4.8}
+            width={labelWidth}
+            height={4}
+            rx={2}
+            fill="rgba(7, 10, 16, 0.86)"
+            stroke="rgba(255, 255, 255, 0.18)"
+            strokeWidth={0.18}
+          />
+          <text
+            x={0}
+            y={-2.15}
+            textAnchor="middle"
+            className="font-mono text-[2.45px] font-semibold uppercase tracking-[0.45px]"
+            fill="#fff8ea"
+          >
+            {sleeper.name}
+          </text>
+        </g>
       ) : null}
 
       {selected ? (
@@ -219,34 +231,35 @@ export const SleeperFigure = ({
             y1={centroid.y}
             x2={rotationHandle.x}
             y2={rotationHandle.y}
-            stroke="rgba(255, 243, 218, 0.8)"
-            strokeDasharray="1.4 1.4"
-            strokeWidth={0.3}
+            stroke="rgba(255, 243, 218, 0.34)"
+            strokeWidth={0.22}
           />
           <circle
             {...bindRotate()}
             cx={rotationHandle.x}
             cy={rotationHandle.y}
-            r={1.8}
+            r={1.55}
             fill="#fff4de"
             stroke="#7d4c21"
-            strokeWidth={0.35}
+            strokeWidth={0.28}
           />
-          {editableHandles.map(({ definition, segment, pivot, referenceAngle }) => (
-            <JointHandle
-              key={`${segment.segmentId}-handle`}
-              svgRef={svgRef}
-              pivot={pivot}
-              target={{ x: segment.x2, y: segment.y2 }}
-              definition={{
-                id: segment.segmentId,
-                baseAngle: definition.baseAngle,
-                jointLimits: definition.jointLimits,
-              }}
-              referenceAngle={referenceAngle}
-              onSegmentAngle={onSegmentAngle}
-            />
-          ))}
+          {poseEditing
+            ? editableHandles.map(({ definition, segment, pivot, referenceAngle }) => (
+                <JointHandle
+                  key={`${segment.segmentId}-handle`}
+                  svgRef={svgRef}
+                  pivot={pivot}
+                  target={{ x: segment.x2, y: segment.y2 }}
+                  definition={{
+                    id: segment.segmentId,
+                    baseAngle: definition.baseAngle,
+                    jointLimits: definition.jointLimits,
+                  }}
+                  referenceAngle={referenceAngle}
+                  onSegmentAngle={onSegmentAngle}
+                />
+              ))
+            : null}
         </>
       ) : null}
     </g>

@@ -14,6 +14,7 @@ interface BedStageProps {
   unit: UnitSystem;
   sleepers: Sleeper[];
   selectedSleeperId: string | null;
+  poseEditing: boolean;
   worldSegmentsBySleeper: Record<string, WorldSegment[]>;
   heatField: HeatField;
   onSelectSleeper: (id: string) => void;
@@ -30,6 +31,7 @@ export const BedStage = ({
   unit,
   sleepers,
   selectedSleeperId,
+  poseEditing,
   worldSegmentsBySleeper,
   heatField,
   onSelectSleeper,
@@ -44,9 +46,7 @@ export const BedStage = ({
   return (
     <div ref={captureRef} className="stage-shell">
       <div className="stage-header">
-        <div className="stage-title">drag bodies around and let the mattress tell on everybody</div>
-
-        <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+        <div className="stage-badges">
           <div className="badge">{bed.label}</div>
           <div className="badge">{blanket.label}</div>
           <div className="badge">
@@ -94,6 +94,7 @@ export const BedStage = ({
                   bedWidthIn={bed.widthIn}
                   bedLengthIn={bed.lengthIn}
                   selected={selectedSleeperId === sleeper.id}
+                  poseEditing={selectedSleeperId === sleeper.id && poseEditing}
                   onSelect={() => onSelectSleeper(sleeper.id)}
                   onMove={(point) => onMoveSleeper(sleeper.id, point)}
                   onRotate={(angleDeg) => onRotateSleeper(sleeper.id, angleDeg)}
@@ -126,8 +127,10 @@ export const BedStage = ({
           <div className="stat-label">Contact</div>
           <div className="stat-value">{Math.round(heatField.summary.overlapCount)} boosts</div>
           <div className="stat-note">
-            {selectedSleeper
-              ? `${selectedSleeper.name} is selected. Drag to move and use the top handle to rotate.`
+            {selectedSleeper && poseEditing
+              ? `${selectedSleeper.name} is in pose mode. Drag the small joint dots to tweak limbs.`
+              : selectedSleeper
+                ? `${selectedSleeper.name} is selected. Drag to move and use the top handle to rotate.`
               : `${Math.round(heatField.summary.overlapCount)} overlap boosts are stacking extra heat in the pile.`}
           </div>
         </div>

@@ -40,7 +40,7 @@ export const InsightsPanel = ({ heatField, insights, unit }: InsightsPanelProps)
         ))}
       </div>
 
-      <div className="helper-line">Drag first. Tune later. Export it once the bed starts looking guilty.</div>
+      <div className="helper-line">Drag first. Tune later. The guilty hot spot shows up fast.</div>
 
       <details className="details-shell">
         <summary>How temperatures are estimated</summary>

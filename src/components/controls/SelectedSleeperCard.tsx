@@ -4,6 +4,7 @@ import type { Sleeper, SleeperType } from '../../types';
 
 interface SelectedSleeperCardProps {
   sleeper?: Sleeper;
+  poseEditing: boolean;
   onUpdateBasics: (
     id: string,
     patch: Partial<Pick<Sleeper, 'name' | 'weightLb' | 'thermalTendency' | 'blanketCoverage'>>,
@@ -11,16 +12,19 @@ interface SelectedSleeperCardProps {
   onSetType: (id: string, type: SleeperType) => void;
   onSetBreed: (id: string, breedId?: string) => void;
   onApplyPosePreset: (id: string, posePresetId: string) => void;
+  onTogglePoseEditing: () => void;
   onSetRotation: (id: string, rotationDeg: number) => void;
   onSetSegmentAngle: (id: string, segmentId: string, angle: number) => void;
 }
 
 export const SelectedSleeperCard = ({
   sleeper,
+  poseEditing,
   onUpdateBasics,
   onSetType,
   onSetBreed,
   onApplyPosePreset,
+  onTogglePoseEditing,
   onSetRotation,
   onSetSegmentAngle,
 }: SelectedSleeperCardProps) => {
@@ -47,6 +51,19 @@ export const SelectedSleeperCard = ({
       actions={<div className="badge">{species.label}</div>}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+          <button
+            type="button"
+            className={`chip-btn ${poseEditing ? 'is-active' : ''}`.trim()}
+            onClick={onTogglePoseEditing}
+          >
+            {poseEditing ? 'Done posing on bed' : 'Pose on bed'}
+          </button>
+          <div className="helper-line">
+            Joint dots only show up while pose mode is on, so the stage stays clean the rest of the time.
+          </div>
+        </div>
+
         <div className="mini-grid">
           <label>
             <div className="tiny-label">Name</div>
