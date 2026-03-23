@@ -4,6 +4,9 @@ import { clamp, normalizeAngle, radToDeg, rotateVector } from '../../lib/geometr
 import { getSpeciesProfile } from '../../simulation/presets/resolveSleeperPreset';
 import type { Point, Sleeper, WorldSegment } from '../../types';
 import type { RefObject } from 'react';
+import { renderCatSVG } from './renderCatSVG';
+import { renderDogSVG } from './renderDogSVG';
+import { renderHumanSVG } from './renderHumanSVG';
 
 interface JointHandleProps {
   svgRef: RefObject<SVGSVGElement | null>;
@@ -45,8 +48,24 @@ const JointHandle = ({
 
   return (
     <g>
-      <line x1={pivot.x} y1={pivot.y} x2={target.x} y2={target.y} stroke="rgba(255, 243, 218, 0.6)" strokeDasharray="1.2 1.2" strokeWidth={0.24} />
-      <circle {...bindJoint()} cx={target.x} cy={target.y} r={1.3} fill="#f6c990" stroke="#6d4120" strokeWidth={0.25} />
+      <line
+        x1={pivot.x}
+        y1={pivot.y}
+        x2={target.x}
+        y2={target.y}
+        stroke="rgba(255, 243, 218, 0.38)"
+        strokeDasharray="1.1 1.1"
+        strokeWidth={0.22}
+      />
+      <circle
+        {...bindJoint()}
+        cx={target.x}
+        cy={target.y}
+        r={1.28}
+        fill="#f6c990"
+        stroke="#6d4120"
+        strokeWidth={0.22}
+      />
     </g>
   );
 };
@@ -101,6 +120,21 @@ export const SleeperFigure = ({
     };
   }, [segments]);
 
+  const labelPoint = useMemo(() => {
+    const head = segmentMap.head;
+    if (head) {
+      return {
+        x: head.cx,
+        y: head.cy - head.width * 0.95,
+      };
+    }
+
+    return {
+      x: centroid.x,
+      y: centroid.y - 7.5,
+    };
+  }, [centroid.x, centroid.y, segmentMap]);
+
   const rotationHandle = useMemo(() => {
     const offset = rotateVector({ x: 0, y: -11 }, sleeper.rotationDeg);
     return {
@@ -149,43 +183,55 @@ export const SleeperFigure = ({
     })
     .filter((handle): handle is NonNullable<typeof handle> => Boolean(handle));
 
+  const visibleFigure = (() => {
+    if (sleeper.type === 'adult' || sleeper.type === 'child') {
+      return renderHumanSVG(segments, sleeper, selected, bedWidthIn, bedLengthIn);
+    }
+    if (sleeper.type === 'dog') {
+      return renderDogSVG(segments, sleeper, selected, bedWidthIn, bedLengthIn);
+    }
+    return renderCatSVG(segments, sleeper, selected, bedWidthIn, bedLengthIn);
+  })();
+
   return (
     <g {...bindDrag()} onPointerDown={onSelect}>
-      {segments.map((segment) =>
-        segment.kind === 'circle' ? (
-          <g key={segment.segmentId}>
-            <circle cx={segment.cx} cy={segment.cy} r={segment.width / 2 + 0.95} fill="rgba(21, 16, 12, 0.45)" />
-            <circle cx={segment.cx} cy={segment.cy} r={segment.width / 2} fill={sleeper.color} stroke={selected ? '#fff4de' : 'rgba(40, 26, 17, 0.65)'} strokeWidth={selected ? 0.65 : 0.4} />
-          </g>
-        ) : (
-          <g key={segment.segmentId}>
-            <line x1={segment.x1} y1={segment.y1} x2={segment.x2} y2={segment.y2} stroke="rgba(21, 16, 12, 0.42)" strokeWidth={segment.width + 1.25} strokeLinecap="round" />
-            <line x1={segment.x1} y1={segment.y1} x2={segment.x2} y2={segment.y2} stroke={sleeper.color} strokeWidth={segment.width} strokeLinecap="round" />
-            {selected ? (
-              <line x1={segment.x1} y1={segment.y1} x2={segment.x2} y2={segment.y2} stroke="rgba(255, 244, 222, 0.95)" strokeWidth={0.45} strokeLinecap="round" />
-            ) : null}
-          </g>
-        ),
-      )}
+      {visibleFigure}
 
-      <text
-        x={centroid.x}
-        y={centroid.y - 8.4}
-        textAnchor="middle"
-        className="pointer-events-none font-mono text-[3.3px] font-semibold uppercase tracking-[0.7px]"
-        fill={selected ? '#fff9ed' : '#f3ece1'}
-        stroke="rgba(7, 9, 15, 0.96)"
-        strokeWidth={0.95}
-        paintOrder="stroke"
-      >
-        {sleeper.name}
-      </text>
+      {selected ? (
+        <text
+          x={labelPoint.x}
+          y={labelPoint.y}
+          textAnchor="middle"
+          className="pointer-events-none font-mono text-[3.2px] font-semibold uppercase tracking-[0.7px]"
+          fill="#fff9ed"
+          stroke="rgba(7, 9, 15, 0.96)"
+          strokeWidth={0.95}
+          paintOrder="stroke"
+        >
+          {sleeper.name}
+        </text>
+      ) : null}
 
       {selected ? (
         <>
-          <circle cx={centroid.x} cy={centroid.y} r={8.8} fill="none" stroke="rgba(255, 243, 218, 0.68)" strokeDasharray="1.8 1.8" strokeWidth={0.34} />
-          <line x1={centroid.x} y1={centroid.y} x2={rotationHandle.x} y2={rotationHandle.y} stroke="rgba(255, 243, 218, 0.9)" strokeDasharray="1.4 1.4" strokeWidth={0.32} />
-          <circle {...bindRotate()} cx={rotationHandle.x} cy={rotationHandle.y} r={1.8} fill="#fff4de" stroke="#7d4c21" strokeWidth={0.35} />
+          <line
+            x1={centroid.x}
+            y1={centroid.y}
+            x2={rotationHandle.x}
+            y2={rotationHandle.y}
+            stroke="rgba(255, 243, 218, 0.8)"
+            strokeDasharray="1.4 1.4"
+            strokeWidth={0.3}
+          />
+          <circle
+            {...bindRotate()}
+            cx={rotationHandle.x}
+            cy={rotationHandle.y}
+            r={1.8}
+            fill="#fff4de"
+            stroke="#7d4c21"
+            strokeWidth={0.35}
+          />
           {editableHandles.map(({ definition, segment, pivot, referenceAngle }) => (
             <JointHandle
               key={`${segment.segmentId}-handle`}

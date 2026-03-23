@@ -27,7 +27,7 @@ export const BedEnvironmentCard = ({
     title="Setup"
     eyebrow="quick setup"
     accent="hot"
-    actions={<div className="badge badge-hot">{formatRange(hotspotRangeF, environment.unit)}</div>}
+    actions={<div className="badge badge-hot">est. {formatRange(hotspotRangeF, environment.unit)}</div>}
   >
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
       <div className="helper-line">Pick the mattress, pick the blanket, then start dropping bodies.</div>

@@ -26,6 +26,9 @@ const blanketCoverageFactor = {
   full: 1.14,
 };
 
+// A solo 170 lb neutral adult on a queen bed with a duvet lands near this max field value.
+const FIELD_CALIBRATION = 0.8;
+
 const segmentSamples = (segment: WorldSegment, count: number): Point[] => {
   if (segment.kind === 'circle') {
     return [{ x: segment.cx, y: segment.cy }];
@@ -104,7 +107,7 @@ export const runHeatSimulation = ({
 
   sleepers.forEach((sleeper) => {
     const segments = worldSegmentsBySleeper[sleeper.id] ?? [];
-    const weightRatio = Math.pow(sleeper.weightLb / 150, 0.42);
+    const weightRatio = Math.pow(sleeper.weightLb / 150, 0.65);
     const tendency = tendencyFactor[sleeper.thermalTendency];
     const blanketCoverage = blanketCoverageFactor[sleeper.blanketCoverage];
 
@@ -211,7 +214,14 @@ export const runHeatSimulation = ({
     }
   }
 
-  const peakDeltaF = 9 + blanket.retention * 4.2 + Math.min(6, contacts.length * 0.08);
+  const totalThermalLoad = sleepers.reduce((sum, sleeper) => {
+    const weightRatio = Math.pow(sleeper.weightLb / 150, 0.75);
+    return sum + tendencyFactor[sleeper.thermalTendency] * weightRatio;
+  }, 0);
+  const baseDelta = 8 + blanket.retention * 4.5;
+  const loadBonus = Math.min(8, totalThermalLoad * 1.2);
+  const contactBonus = Math.min(5, contacts.length * 0.1);
+  const peakDeltaF = baseDelta + loadBonus + contactBonus;
   const hotspotPoint = {
     x: (((maxIndex % cols) + 0.5) / cols) * bed.widthIn,
     y: ((Math.floor(maxIndex / cols) + 0.5) / rows) * bed.lengthIn,
@@ -229,8 +239,10 @@ export const runHeatSimulation = ({
       .slice(0, 3)
       .map((item) => item.id);
 
-  const hotspotTemp = createTemperatureRange(maxValue / (maxValue || 1), roomTempF, peakDeltaF);
-  const coolspotTemp = createTemperatureRange(clamp(minValue / (maxValue || 1), 0, 0.2), roomTempF, peakDeltaF);
+  const hotspotLocal = Math.min(1, maxValue / FIELD_CALIBRATION);
+  const coolspotLocal = clamp(minValue / FIELD_CALIBRATION, 0, 0.2);
+  const hotspotTemp = createTemperatureRange(hotspotLocal, roomTempF, peakDeltaF);
+  const coolspotTemp = createTemperatureRange(coolspotLocal, roomTempF, peakDeltaF);
 
   return {
     cols,

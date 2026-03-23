@@ -14,13 +14,13 @@ export const InsightsPanel = ({ heatField, insights, unit }: InsightsPanelProps)
       <div className="stat-row">
         <div className="stat-box">
           <div className="stat-label">Warmest</div>
-          <div className="stat-value hot">{formatDualRange(heatField.summary.hotspot.absoluteRangeF, unit)}</div>
+          <div className="stat-value hot">est. {formatDualRange(heatField.summary.hotspot.absoluteRangeF, unit)}</div>
           <div className="stat-note">{heatField.summary.hotspot.zoneLabel}</div>
         </div>
 
         <div className="stat-box">
           <div className="stat-label">Coolest</div>
-          <div className="stat-value cool">{formatDualRange(heatField.summary.coolspot.absoluteRangeF, unit)}</div>
+          <div className="stat-value cool">est. {formatDualRange(heatField.summary.coolspot.absoluteRangeF, unit)}</div>
           <div className="stat-note">{heatField.summary.coolspot.zoneLabel}</div>
         </div>
 
@@ -41,6 +41,16 @@ export const InsightsPanel = ({ heatField, insights, unit }: InsightsPanelProps)
       </div>
 
       <div className="helper-line">Drag first. Tune later. Export it once the bed starts looking guilty.</div>
+
+      <details className="details-shell">
+        <summary>How temperatures are estimated</summary>
+        <div className="details-body helper-line">
+          This app models relative heat distribution from body size, position, pose, and blanket type.
+          Temperature ranges are estimated from a calibrated reference band consistent with published sleep
+          microclimate research, where bed surfaces often land around 80-95F under blankets in a 65-72F room.
+          These outputs are plausible estimates, not measurements.
+        </div>
+      </details>
     </div>
   </Panel>
 );

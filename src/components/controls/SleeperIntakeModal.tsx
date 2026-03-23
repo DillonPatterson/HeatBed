@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { dogBreeds } from '../../data/breeds/dogBreeds';
 import { catPresets } from '../../data/species/catPresets';
 import { getSpeciesProfile } from '../../simulation/presets/resolveSleeperPreset';
-import type { SleeperType, ThermalTendency } from '../../types';
 import type { HumanPresentation } from '../../features/sleepers/sleeperColors';
+import type { SleeperType, ThermalTendency } from '../../types';
 
 export interface SleeperIntakePayload {
   type: SleeperType;
@@ -111,7 +111,13 @@ export const SleeperIntakeModal = ({
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" role="dialog" aria-modal="true" aria-labelledby="intake-title" onClick={(event) => event.stopPropagation()}>
+      <div
+        className="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="intake-title"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="modal-header">
           <div>
             <div className="panel-eyebrow">
@@ -123,7 +129,7 @@ export const SleeperIntakeModal = ({
             </div>
           </div>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Close sleeper intake">
-            ×
+            x
           </button>
         </div>
 
@@ -165,7 +171,7 @@ export const SleeperIntakeModal = ({
                   </label>
                 </div>
                 <div className="helper-line" style={{ marginTop: '0.35rem' }}>
-                  Height only steers the quick starting weight so adding someone feels less generic.
+                  Height only steers the starting weight so adding someone feels less generic.
                 </div>
               </div>
 

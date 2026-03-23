@@ -112,23 +112,23 @@ export const BedStage = ({
       <div className="stage-strip">
         <div className="strip-card">
           <div className="stat-label">Warmest zone</div>
-          <div className="stat-value hot">{formatDualRange(heatField.summary.hotspot.absoluteRangeF, unit)}</div>
+          <div className="stat-value hot">est. {formatDualRange(heatField.summary.hotspot.absoluteRangeF, unit)}</div>
           <div className="stat-note">{heatField.summary.hotspot.zoneLabel}</div>
         </div>
 
         <div className="strip-card">
           <div className="stat-label">Coolest zone</div>
-          <div className="stat-value cool">{formatDualRange(heatField.summary.coolspot.absoluteRangeF, unit)}</div>
+          <div className="stat-value cool">est. {formatDualRange(heatField.summary.coolspot.absoluteRangeF, unit)}</div>
           <div className="stat-note">{heatField.summary.coolspot.zoneLabel}</div>
         </div>
 
         <div className="strip-card">
-          <div className="stat-label">{selectedSleeper ? 'Selected' : 'Contact'}</div>
-          <div className="stat-value">{selectedSleeper ? selectedSleeper.name : Math.round(heatField.summary.overlapCount)}</div>
+          <div className="stat-label">Contact</div>
+          <div className="stat-value">{Math.round(heatField.summary.overlapCount)} boosts</div>
           <div className="stat-note">
             {selectedSleeper
-              ? 'Drag to move, top handle to rotate, and tune the details on the left.'
-              : `${Math.round(heatField.summary.overlapCount)} overlap boosts in the pile`}
+              ? `${selectedSleeper.name} is selected. Drag to move and use the top handle to rotate.`
+              : `${Math.round(heatField.summary.overlapCount)} overlap boosts are stacking extra heat in the pile.`}
           </div>
         </div>
       </div>

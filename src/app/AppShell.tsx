@@ -95,7 +95,10 @@ export const AppShell = ({
 
       <div className="header-right">
         <div className="badge badge-hot">
-          hotspot {formatRange(heatField.summary.hotspot.absoluteRangeF, unit)}
+          hotspot est. {formatRange(heatField.summary.hotspot.absoluteRangeF, unit)}
+        </div>
+        <div className="badge" style={{ opacity: 0.72, fontSize: '0.6rem' }}>
+          modeled estimate - not measured
         </div>
         <div className="unit-toggle">
           {(['F', 'C'] as const).map((nextUnit) => (
