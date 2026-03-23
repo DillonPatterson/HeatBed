@@ -21,6 +21,10 @@ npm install
 npm run dev
 ```
 
+## Double-Click Launch On Windows
+
+Double-click [Launch-BedHeatSimulator.cmd](C:\Users\dillo\Desktop\BedHeatMap\Launch-BedHeatSimulator.cmd) to start the local app server and open the simulator in your browser automatically.
+
 ## Build
 
 ```bash
