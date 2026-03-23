@@ -6,7 +6,7 @@ export const blanketProfiles: BlanketProfile[] = [
     label: 'No blanket',
     retention: 0.82,
     airflow: 1.1,
-    stageTint: 'rgba(239, 194, 104, 0.08)',
+    stageTint: 'rgba(255,120,40,0.00)',
     note: 'Heat escapes fast, especially at the edges.',
   },
   {
@@ -14,7 +14,7 @@ export const blanketProfiles: BlanketProfile[] = [
     label: 'Sheet only',
     retention: 0.94,
     airflow: 1.02,
-    stageTint: 'rgba(255, 213, 158, 0.12)',
+    stageTint: 'rgba(255,120,40,0.04)',
     note: 'A little hold, still breezy.',
   },
   {
@@ -22,7 +22,7 @@ export const blanketProfiles: BlanketProfile[] = [
     label: 'Comforter',
     retention: 1.08,
     airflow: 0.92,
-    stageTint: 'rgba(244, 184, 121, 0.18)',
+    stageTint: 'rgba(255,100,30,0.08)',
     note: 'Typical heat trap with decent spread.',
   },
   {
@@ -30,7 +30,7 @@ export const blanketProfiles: BlanketProfile[] = [
     label: 'Duvet',
     retention: 1.18,
     airflow: 0.88,
-    stageTint: 'rgba(239, 151, 73, 0.22)',
+    stageTint: 'rgba(255,90,20,0.12)',
     note: 'Retains heat and smooths cool pockets.',
   },
   {
@@ -38,7 +38,7 @@ export const blanketProfiles: BlanketProfile[] = [
     label: 'Heavy winter blanket',
     retention: 1.32,
     airflow: 0.78,
-    stageTint: 'rgba(222, 116, 36, 0.24)',
+    stageTint: 'rgba(255,80,10,0.18)',
     note: 'High retention, faster heat buildup, slower release.',
   },
 ];

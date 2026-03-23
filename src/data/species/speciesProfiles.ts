@@ -13,7 +13,7 @@ export const speciesProfiles: Record<SpeciesProfile['type'], SpeciesProfile> = {
     widthScale: 1.0,
     defaultBlanketCoverage: 'full',
     defaultPosePresetId: 'human-side-sleeper',
-    palette: { body: '#3a5f8f', accent: '#f4c98a', label: '#14304f' },
+    palette: { body: '#5b9bd5', accent: '#f4c98a', label: '#14304f' },
     posePresets: [
       { id: 'human-side-sleeper', label: 'Side sleeper', description: 'Compact adult pose with bent arms and knees.', segmentAngles: { leftArm: 34, rightArm: -18, leftLeg: 8, rightLeg: -14 } },
       { id: 'human-starfish', label: 'Starfish', description: 'Limb spread boosts footprint and surface heat.', segmentAngles: { leftArm: 92, rightArm: -92, leftLeg: 28, rightLeg: -28 } },
@@ -45,7 +45,7 @@ export const speciesProfiles: Record<SpeciesProfile['type'], SpeciesProfile> = {
     widthScale: 0.78,
     defaultBlanketCoverage: 'full',
     defaultPosePresetId: 'child-tuck',
-    palette: { body: '#88b6b1', accent: '#f8d59d', label: '#124841' },
+    palette: { body: '#6ecfc9', accent: '#f8d59d', label: '#124841' },
     posePresets: [
       { id: 'child-tuck', label: 'Tucked in', description: 'Compact child pose that clusters heat near the middle.', segmentAngles: { leftArm: 48, rightArm: -42, leftLeg: 28, rightLeg: -24 } },
       { id: 'child-sprawl', label: 'Starfish kid', description: 'Fast mattress takeover in miniature form.', segmentAngles: { leftArm: 104, rightArm: -104, leftLeg: 22, rightLeg: -22 } },
@@ -76,7 +76,7 @@ export const speciesProfiles: Record<SpeciesProfile['type'], SpeciesProfile> = {
     widthScale: 0.9,
     defaultBlanketCoverage: 'partial',
     defaultPosePresetId: 'dog-curl',
-    palette: { body: '#8a654d', accent: '#f4c98a', label: '#4c2f1d' },
+    palette: { body: '#d4956a', accent: '#f4c98a', label: '#4c2f1d' },
     posePresets: [
       { id: 'dog-curl', label: 'Curl', description: 'Classic donut warmth with a dense center.', segmentAngles: { neck: -32, frontLeftLeg: 102, frontRightLeg: -102, hindLeftLeg: 126, hindRightLeg: -126, tail: 58 } },
       { id: 'dog-sphinx', label: 'Sphinx', description: 'Front-loaded heat with paws tucked near the chest.', segmentAngles: { neck: -4, frontLeftLeg: 64, frontRightLeg: -64, hindLeftLeg: 20, hindRightLeg: -20, tail: 18 } },
@@ -109,7 +109,7 @@ export const speciesProfiles: Record<SpeciesProfile['type'], SpeciesProfile> = {
     widthScale: 0.72,
     defaultBlanketCoverage: 'partial',
     defaultPosePresetId: 'cat-loaf',
-    palette: { body: '#6c7b54', accent: '#f3c386', label: '#30441c' },
+    palette: { body: '#9ab86e', accent: '#f3c386', label: '#30441c' },
     posePresets: [
       { id: 'cat-loaf', label: 'Loaf', description: 'Paws tucked under for a compact heat pocket.', segmentAngles: { neck: -6, frontLeftLeg: 108, frontRightLeg: -108, hindLeftLeg: 118, hindRightLeg: -118, tail: 34 } },
       { id: 'cat-stretch', label: 'Stretch', description: 'Long cat line with cooler edges and a warm core.', segmentAngles: { neck: -2, frontLeftLeg: 36, frontRightLeg: -36, hindLeftLeg: 18, hindRightLeg: -18, tail: -8 } },

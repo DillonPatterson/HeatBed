@@ -27,10 +27,7 @@ interface AppShellProps {
   onSelectSleeper: (id: string) => void;
   onAddSleeper: (type: SleeperType) => void;
   onRemoveSleeper: (id: string) => void;
-  onUpdateBasics: (
-    id: string,
-    patch: Partial<Pick<Sleeper, 'name' | 'weightLb' | 'thermalTendency' | 'blanketCoverage'>>,
-  ) => void;
+  onUpdateBasics: (id: string, patch: Partial<Pick<Sleeper, 'name' | 'weightLb' | 'thermalTendency' | 'blanketCoverage'>>) => void;
   onSetType: (id: string, type: SleeperType) => void;
   onSetBreed: (id: string, breedId?: string) => void;
   onApplyPosePreset: (id: string, posePresetId: string) => void;
@@ -55,63 +52,191 @@ export const AppShell = ({
   isExporting,
   ...actions
 }: AppShellProps) => (
-  <div className="mx-auto w-full max-w-[1800px] px-4 py-5 md:px-6 xl:px-8">
-    <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <div className="text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-stone-500">Consumer MVP</div>
-        <h1 className="font-display text-4xl text-stone-900 md:text-5xl">Bed Heat Simulator</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600 md:text-base">
-          Build the actual household setup, drag everybody into place, and see where the bed turns into a shared toaster.
-        </p>
+  <div
+    style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+    }}
+  >
+    {/* ── TOP BAR ── */}
+    <header
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.75rem 1.5rem',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(12,14,20,0.9)',
+        backdropFilter: 'blur(12px)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        gap: '1rem',
+        flexWrap: 'wrap',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {/* Hot icon */}
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 8,
+            background: 'linear-gradient(135deg, #ff5e1a, #ff8c3a)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.1rem',
+            boxShadow: '0 0 16px rgba(255,94,26,0.5)',
+            flexShrink: 0,
+          }}
+        >
+          🔥
+        </div>
+        <div>
+          <div
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '1.6rem',
+              fontWeight: 900,
+              letterSpacing: '0.02em',
+              textTransform: 'uppercase',
+              lineHeight: 1,
+              color: 'var(--text-primary)',
+            }}
+          >
+            Bed Heat Simulator
+          </div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--text-muted)', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 2 }}>
+            Thermal field active <span className="blink" style={{ color: 'var(--accent-hot)' }}>■</span>
+          </div>
+        </div>
       </div>
-      <div className="rounded-full bg-white/70 px-4 py-2 text-sm font-semibold text-stone-700 shadow-sm ring-1 ring-stone-200">
-        Modeled estimate, not lab instrumentation.
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        {/* Hotspot readout */}
+        <div
+          style={{
+            background: 'rgba(255,94,26,0.08)',
+            border: '1px solid rgba(255,94,26,0.25)',
+            borderRadius: 8,
+            padding: '0.4rem 0.85rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.14em' }}>Hotspot</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.88rem', fontWeight: 700, color: 'var(--accent-hot)' }}>
+            {heatField.summary.hotspot.absoluteRangeF.minF}–{heatField.summary.hotspot.absoluteRangeF.maxF}°{actions.environment.unit}
+          </span>
+        </div>
+
+        <div
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 8,
+            padding: '0.4rem 0.85rem',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.68rem',
+            color: 'var(--text-muted)',
+            letterSpacing: '0.08em',
+          }}
+        >
+          Modeled estimate · not lab data
+        </div>
       </div>
     </header>
 
-    <div className="grid gap-5 xl:grid-cols-[23rem_minmax(0,1fr)_21rem]">
-      <ControlPanel
-        environment={actions.environment}
-        bedSizeId={bedSizeId}
-        sleepers={sleepers}
-        selectedSleeper={selectedSleeper}
-        selectedSleeperId={selectedSleeperId}
-        hotspotRangeF={heatField.summary.hotspot.absoluteRangeF}
-        onSetBedSizeId={actions.onSetBedSizeId}
-        onSetRoomTempF={actions.onSetRoomTempF}
-        onSetBlanketId={actions.onSetBlanketId}
-        onSetUnit={actions.onSetUnit}
-        onExport={actions.onExport}
-        onReset={actions.onReset}
-        isExporting={isExporting}
-        onSelectSleeper={actions.onSelectSleeper}
-        onAddSleeper={actions.onAddSleeper}
-        onRemoveSleeper={actions.onRemoveSleeper}
-        onUpdateBasics={actions.onUpdateBasics}
-        onSetType={actions.onSetType}
-        onSetBreed={actions.onSetBreed}
-        onApplyPosePreset={actions.onApplyPosePreset}
-        onSetRotation={actions.onSetRotation}
-        onSetSegmentAngle={actions.onSetSegmentAngle}
-      />
+    {/* ── MAIN CONTENT ── */}
+    <main
+      style={{
+        flex: 1,
+        display: 'grid',
+        gridTemplateColumns: '280px minmax(0,1fr) 280px',
+        gap: '1px',
+        background: 'rgba(255,255,255,0.04)',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Left column */}
+      <div
+        style={{
+          background: 'var(--bg-surface)',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0,
+        }}
+      >
+        <ControlPanel
+          environment={actions.environment}
+          bedSizeId={bedSizeId}
+          sleepers={sleepers}
+          selectedSleeper={selectedSleeper}
+          selectedSleeperId={selectedSleeperId}
+          hotspotRangeF={heatField.summary.hotspot.absoluteRangeF}
+          onSetBedSizeId={actions.onSetBedSizeId}
+          onSetRoomTempF={actions.onSetRoomTempF}
+          onSetBlanketId={actions.onSetBlanketId}
+          onSetUnit={actions.onSetUnit}
+          onExport={actions.onExport}
+          onReset={actions.onReset}
+          isExporting={isExporting}
+          onSelectSleeper={actions.onSelectSleeper}
+          onAddSleeper={actions.onAddSleeper}
+          onRemoveSleeper={actions.onRemoveSleeper}
+          onUpdateBasics={actions.onUpdateBasics}
+          onSetType={actions.onSetType}
+          onSetBreed={actions.onSetBreed}
+          onApplyPosePreset={actions.onApplyPosePreset}
+          onSetRotation={actions.onSetRotation}
+          onSetSegmentAngle={actions.onSetSegmentAngle}
+        />
+      </div>
 
-      <BedStage
-        captureRef={captureRef}
-        svgRef={svgRef}
-        bedSizeId={bedSizeId}
-        blanketId={blanketId}
-        unit={unit}
-        sleepers={sleepers}
-        selectedSleeperId={selectedSleeperId}
-        worldSegmentsBySleeper={worldSegmentsBySleeper}
-        heatField={heatField}
-        onSelectSleeper={actions.onSelectSleeper}
-        onMoveSleeper={actions.onMoveSleeper}
-        onRotateSleeper={actions.onRotateSleeper}
-        onSegmentAngle={actions.onSetSegmentAngle}
-      />
+      {/* Center: Bed stage */}
+      <div
+        style={{
+          background: 'var(--bg-base)',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '1.25rem',
+          gap: '1rem',
+        }}
+      >
+        <BedStage
+          captureRef={captureRef}
+          svgRef={svgRef}
+          bedSizeId={bedSizeId}
+          blanketId={blanketId}
+          unit={unit}
+          sleepers={sleepers}
+          selectedSleeperId={selectedSleeperId}
+          worldSegmentsBySleeper={worldSegmentsBySleeper}
+          heatField={heatField}
+          onSelectSleeper={actions.onSelectSleeper}
+          onMoveSleeper={actions.onMoveSleeper}
+          onRotateSleeper={actions.onRotateSleeper}
+          onSegmentAngle={actions.onSetSegmentAngle}
+        />
+      </div>
 
-      <InsightsPanel heatField={heatField} insights={insights} unit={unit} />
-    </div>
+      {/* Right column */}
+      <div
+        style={{
+          background: 'var(--bg-surface)',
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0,
+        }}
+      >
+        <InsightsPanel heatField={heatField} insights={insights} unit={unit} />
+      </div>
+    </main>
   </div>
 );

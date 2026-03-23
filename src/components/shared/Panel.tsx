@@ -5,17 +5,85 @@ interface PanelProps extends PropsWithChildren {
   eyebrow?: string;
   actions?: ReactNode;
   className?: string;
+  accent?: 'hot' | 'cool' | 'neutral';
+  noPad?: boolean;
 }
 
-export const Panel = ({ title, eyebrow, actions, className = '', children }: PanelProps) => (
-  <section className={`panel-shell ${className}`}>
-    <div className="mb-4 flex items-start justify-between gap-4">
+const accentColors = {
+  hot: 'var(--accent-hot)',
+  cool: 'var(--accent-cool)',
+  neutral: 'var(--text-muted)',
+};
+
+export const Panel = ({ title, eyebrow, actions, className = '', children, accent = 'neutral', noPad }: PanelProps) => (
+  <section
+    className={className}
+    style={{
+      borderBottom: '1px solid rgba(255,255,255,0.06)',
+      padding: noPad ? 0 : '1rem',
+    }}
+  >
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        gap: '0.75rem',
+        marginBottom: children ? '0.85rem' : 0,
+        paddingLeft: noPad ? '1rem' : 0,
+        paddingRight: noPad ? '1rem' : 0,
+        paddingTop: noPad ? '0.85rem' : 0,
+      }}
+    >
       <div>
-        {eyebrow ? <div className="text-[0.67rem] font-semibold uppercase tracking-[0.24em] text-stone-500">{eyebrow}</div> : null}
-        <h2 className="font-display text-[1.15rem] text-stone-900">{title}</h2>
+        {eyebrow && (
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.58rem',
+              fontWeight: 700,
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              color: accentColors[accent],
+              marginBottom: '0.2rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+            }}
+          >
+            <span
+              style={{
+                display: 'inline-block',
+                width: 4,
+                height: 4,
+                borderRadius: '50%',
+                background: accentColors[accent],
+                boxShadow: accent === 'hot' ? '0 0 6px var(--accent-hot)' : accent === 'cool' ? '0 0 6px var(--accent-cool)' : 'none',
+              }}
+            />
+            {eyebrow}
+          </div>
+        )}
+        <h2
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '1.05rem',
+            fontWeight: 800,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            color: 'var(--text-primary)',
+            lineHeight: 1.1,
+          }}
+        >
+          {title}
+        </h2>
       </div>
       {actions}
     </div>
-    {children}
+    {children && (
+      <div style={noPad ? { padding: '0 1rem 1rem' } : {}}>
+        {children}
+      </div>
+    )}
   </section>
 );
