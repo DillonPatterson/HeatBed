@@ -32,17 +32,89 @@ interface AppState {
   resetDemo: () => void;
 }
 
+type PersistedAppState = Pick<
+  AppState,
+  'bedSizeId' | 'environment' | 'sleepers' | 'selectedSleeperId'
+>;
+
+const STORE_VERSION = 2;
+
 const clampSleeperWeight = (weightLb: number, type: SleeperType) => {
   const profile = getSpeciesProfile(type);
   return clamp(weightLb, profile.weightRange[0], profile.weightRange[1]);
 };
 
-const buildDefaultState = () => ({
+const buildDefaultState = (): PersistedAppState => ({
   bedSizeId: defaultBedSizeId,
   environment: defaultEnvironment(),
   sleepers: createDefaultSleepers(),
   selectedSleeperId: null as string | null,
 });
+
+const normalizePersistedSleeper = (sleeper: Sleeper, bedSizeId: BedSizeId): Sleeper => {
+  const bed = getBedSize(bedSizeId);
+  const species = getSpeciesProfile(sleeper.type);
+  const pose = getPosePreset(sleeper.type, sleeper.posePresetId || species.defaultPosePresetId);
+
+  return {
+    ...sleeper,
+    breedId:
+      sleeper.type === 'adult' || sleeper.type === 'child'
+        ? undefined
+        : sleeper.breedId ?? getDefaultBreedId(sleeper.type),
+    weightLb: clampSleeperWeight(
+      Number.isFinite(sleeper.weightLb) ? sleeper.weightLb : species.defaultWeightLb,
+      sleeper.type,
+    ),
+    posePresetId: pose.id,
+    poseState: {
+      ...pose.segmentAngles,
+      ...sleeper.poseState,
+    },
+    blanketCoverage: sleeper.blanketCoverage ?? species.defaultBlanketCoverage,
+    color: species.palette.body,
+    root: {
+      x: clamp(
+        Number.isFinite(sleeper.root?.x) ? sleeper.root.x : bed.widthIn / 2,
+        2.5,
+        bed.widthIn - 2.5,
+      ),
+      y: clamp(
+        Number.isFinite(sleeper.root?.y) ? sleeper.root.y : bed.lengthIn / 2,
+        2.5,
+        bed.lengthIn - 2.5,
+      ),
+    },
+    rotationDeg: Number.isFinite(sleeper.rotationDeg) ? sleeper.rotationDeg : 0,
+  };
+};
+
+const migratePersistedState = (persistedState: unknown): PersistedAppState => {
+  const defaults = buildDefaultState();
+
+  if (!persistedState || typeof persistedState !== 'object') {
+    return defaults;
+  }
+
+  const partial = persistedState as Partial<PersistedAppState>;
+  const bedSizeId = partial.bedSizeId ?? defaults.bedSizeId;
+  const sleepers =
+    partial.sleepers?.map((sleeper) => normalizePersistedSleeper(sleeper, bedSizeId)) ??
+    defaults.sleepers;
+  const selectedSleeperId = sleepers.some((sleeper) => sleeper.id === partial.selectedSleeperId)
+    ? partial.selectedSleeperId ?? null
+    : sleepers[0]?.id ?? null;
+
+  return {
+    bedSizeId,
+    environment: {
+      ...defaults.environment,
+      ...partial.environment,
+    },
+    sleepers,
+    selectedSleeperId,
+  };
+};
 
 export const useAppStore = create<AppState>()(
   persist(
@@ -193,7 +265,9 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'bed-heat-simulator',
+      version: STORE_VERSION,
       storage: createJSONStorage(() => localStorage),
+      migrate: (persistedState) => migratePersistedState(persistedState),
       partialize: (state) => ({
         bedSizeId: state.bedSizeId,
         environment: state.environment,

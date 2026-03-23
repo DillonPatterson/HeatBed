@@ -24,21 +24,34 @@ export const generateInsights = ({
     .map((id) => nameLookup.get(id))
     .filter((name): name is string => Boolean(name));
 
+  const hotspotLead = listNames(hotspotNames);
+  const coolspotLead = coolspotNames.length > 0 ? `away from ${listNames(coolspotNames)}` : 'where nobody is really camping out';
   const insights = [
-    `The warmest zone is ${heatField.summary.hotspot.zoneLabel}, driven mostly by ${listNames(hotspotNames)}.`,
-    `The coolest pocket stays around the ${heatField.summary.coolspot.zoneLabel}${coolspotNames.length ? `, away from ${listNames(coolspotNames)}` : ''}.`,
+    hotspotNames.length > 0
+      ? `${hotspotLead} are turning the ${heatField.summary.hotspot.zoneLabel} into the hot side of the bed.`
+      : `The ${heatField.summary.hotspot.zoneLabel} is winning the heat race right now.`,
+    `The coolest escape hatch is ${heatField.summary.coolspot.zoneLabel}, ${coolspotLead}.`,
   ];
 
-  if (heatField.summary.overlapCount > 4) {
+  if (heatField.summary.overlapCount > 10) {
     insights.push(
-      `${Math.round(heatField.summary.overlapCount)} overlap contacts are creating a serious shared heat pocket near the middle lanes.`,
+      `${Math.round(heatField.summary.overlapCount)} contact boosts means this setup is paying a serious cuddle tax.`,
+    );
+  } else if (heatField.summary.overlapCount > 3) {
+    insights.push(
+      `${Math.round(heatField.summary.overlapCount)} overlap contacts are stacking heat faster than body size alone would suggest.`,
     );
   } else if (heatField.summary.overlapCount > 0) {
-    insights.push('A few direct contact zones are intensifying the hottest patch more than body size alone would suggest.');
+    insights.push('A couple of direct contact patches are making the hottest zone flare up early.');
   } else {
-    insights.push('Bodies are spaced enough that the bed is warming in separate islands instead of one giant heat blob.');
+    insights.push('Everybody is spaced out enough that the mattress is warming in separate little islands.');
   }
 
-  insights.push(`${blanket.label} keeps this layout ${blanket.note.toLowerCase()}`);
+  if (blanket.id === 'none') {
+    insights.push('No blanket means the edges leak heat fast, so the warm spots stay punchy instead of spreading softly.');
+  } else {
+    insights.push(`${blanket.label} helps the warmth linger, which makes the hot side feel extra believable.`);
+  }
+
   return insights.slice(0, 4);
 };

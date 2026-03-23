@@ -10,13 +10,6 @@ const namePools: Record<SleeperType, string[]> = {
   cat: ['Pebble', 'Olive', 'Fig', 'Miso', 'Nori', 'Biscuit'],
 };
 
-const colorPools: Record<SleeperType, string[]> = {
-  adult: ['#3a5f8f', '#945f42', '#5e7b5d', '#865977'],
-  child: ['#88b6b1', '#7e9bd4', '#d39d73', '#bc8fca'],
-  dog: ['#8a654d', '#ac7b55', '#6d5847', '#91725c'],
-  cat: ['#6c7b54', '#8a6d4b', '#7f8189', '#a97355'],
-};
-
 const slotPosition = (bedSizeId: BedSizeId, index: number) => {
   const bed = getBedSize(bedSizeId);
   const layout = [
@@ -54,7 +47,7 @@ export const createSleeper = (
     root: overrides.root ?? { x: position.x, y: position.y },
     rotationDeg: overrides.rotationDeg ?? position.rotationDeg,
     blanketCoverage: overrides.blanketCoverage ?? species.defaultBlanketCoverage,
-    color: overrides.color ?? colorPools[type][index % colorPools[type].length],
+    color: overrides.color ?? species.palette.body,
   };
 };
 

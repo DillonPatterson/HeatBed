@@ -1,7 +1,14 @@
 import { BedEnvironmentCard } from './BedEnvironmentCard';
 import { SelectedSleeperCard } from './SelectedSleeperCard';
 import { SleeperListCard } from './SleeperListCard';
-import type { BedSizeId, EnvironmentState, Sleeper, SleeperType, TemperatureRangeF, UnitSystem } from '../../types';
+import type {
+  BedSizeId,
+  EnvironmentState,
+  Sleeper,
+  SleeperType,
+  TemperatureRangeF,
+  UnitSystem,
+} from '../../types';
 
 interface ControlPanelProps {
   environment: EnvironmentState;
@@ -32,26 +39,30 @@ interface ControlPanelProps {
 }
 
 export const ControlPanel = (props: ControlPanelProps) => (
-  <div className="space-y-4">
-    <BedEnvironmentCard
-      environment={props.environment}
-      bedSizeId={props.bedSizeId}
-      hotspotRangeF={props.hotspotRangeF}
-      onSetBedSizeId={props.onSetBedSizeId}
-      onSetRoomTempF={props.onSetRoomTempF}
-      onSetBlanketId={props.onSetBlanketId}
-      onSetUnit={props.onSetUnit}
-      onExport={props.onExport}
-      onReset={props.onReset}
-      isExporting={props.isExporting}
-    />
-    <SleeperListCard
-      sleepers={props.sleepers}
-      selectedSleeperId={props.selectedSleeperId}
-      onSelectSleeper={props.onSelectSleeper}
-      onAddSleeper={props.onAddSleeper}
-      onRemoveSleeper={props.onRemoveSleeper}
-    />
+  <div className="control-stack">
+    <div className="control-top-grid">
+      <BedEnvironmentCard
+        environment={props.environment}
+        bedSizeId={props.bedSizeId}
+        hotspotRangeF={props.hotspotRangeF}
+        onSetBedSizeId={props.onSetBedSizeId}
+        onSetRoomTempF={props.onSetRoomTempF}
+        onSetBlanketId={props.onSetBlanketId}
+        onSetUnit={props.onSetUnit}
+        onExport={props.onExport}
+        onReset={props.onReset}
+        isExporting={props.isExporting}
+      />
+
+      <SleeperListCard
+        sleepers={props.sleepers}
+        selectedSleeperId={props.selectedSleeperId}
+        onSelectSleeper={props.onSelectSleeper}
+        onAddSleeper={props.onAddSleeper}
+        onRemoveSleeper={props.onRemoveSleeper}
+      />
+    </div>
+
     <SelectedSleeperCard
       sleeper={props.selectedSleeper}
       onUpdateBasics={props.onUpdateBasics}

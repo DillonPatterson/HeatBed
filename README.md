@@ -1,29 +1,27 @@
 # Bed Heat Simulator
 
-Bed Heat Simulator is a consumer-facing MVP that lets you build a realistic bed setup, place multiple sleepers, and watch a modeled live heat map respond in real time.
+Bed Heat Simulator is a dark, playful web app for building an overheated sleep setup and watching the mattress tell the truth.
 
-## Stack
+Drag adults, kids, dogs, and cats onto the bed, pile them up, and watch the live heat map react in real time.
 
-- React
-- TypeScript
-- Vite
-- Zustand
-- SVG articulated figures
-- Canvas 2D heat map rendering
-- Tailwind CSS
-- `@use-gesture/react`
-- `html-to-image`
+## Recommended Local Launch On Windows
 
-## Run
+Double-click [Launch-BedHeatSimulator.cmd](C:\Users\dillo\Desktop\BedHeatMap\Launch-BedHeatSimulator.cmd).
+
+That launcher:
+
+- opens the repo at `C:\Users\dillo\Desktop\BedHeatMap`
+- starts the local app server if it is not already running
+- opens the simulator in your browser automatically
+
+This is the easiest way to use the app locally.
+
+## Dev Mode
 
 ```bash
 npm install
 npm run dev
 ```
-
-## Double-Click Launch On Windows
-
-Double-click [Launch-BedHeatSimulator.cmd](C:\Users\dillo\Desktop\BedHeatMap\Launch-BedHeatSimulator.cmd) to start the local app server and open the simulator in your browser automatically.
 
 ## Build
 
@@ -31,68 +29,19 @@ Double-click [Launch-BedHeatSimulator.cmd](C:\Users\dillo\Desktop\BedHeatMap\Lau
 npm run build
 ```
 
-## What’s Included
+## Product Shape
 
-- Bed sizes: twin, full, queen, king, California king
-- Mixed sleeper support: adult, child, dog, cat
-- Dynamic sleeper list with up to 8 sleepers
-- Dog breed presets and cat presets
-- Config-driven articulated figure rigs and pose presets
-- Drag, rotate, and limb-joint adjustments
-- Gaussian splat heat engine with contact intensification
-- Room temperature, blanket type, blanket coverage, and thermal tendency inputs
-- Dual-unit temperature display with persistent toggle
-- Deterministic plain-English insights
-- Local persistence via `localStorage`
-- Screenshot export for sharing
+- Big stage-first bed scene
+- Compact bed setup controls
+- Sleeper tray for building the pile
+- Selected sleeper editor with advanced tweaks hidden by default
+- Live Gaussian-style heat field with contact intensification
+- Estimated temperature ranges in F and C
+- Local persistence with migration for theme-safe sleeper colors
+- Dark export screenshots that match the live app
 
-## Thermal Model Notes
+## Notes
 
-The app is intentionally a modeled estimate, not a scientific or medical instrument.
-
-It uses:
-
-1. Forward kinematics to place articulated segments in bed coordinates.
-2. Per-segment Gaussian heat splats weighted by sleeper size, tendency, and coverage.
-3. Contact boosts where different sleepers overlap closely.
-4. Blanket retention and room-temperature modifiers to convert field intensity into readable estimated ranges.
-
-Temperatures are shown as estimated ranges to avoid fake precision.
-
-## Project Structure
-
-```text
-src/
-  app/
-  components/
-    controls/
-    figures/
-    insights/
-    shared/
-    stage/
-  data/
-    beds/
-    blankets/
-    breeds/
-    species/
-  features/
-    bed/
-    environment/
-    sharing/
-    sleepers/
-  hooks/
-  lib/
-  simulation/
-    insights/
-    kinematics/
-    presets/
-    thermal/
-  store/
-  styles/
-  types/
-```
-
-## Verification
-
-- `npm run build`
-- Browser sanity check against the built app via local HTTP preview
+- This is a believable consumer toy, not a scientific instrument.
+- The thermal model is intentionally lightweight and responsive.
+- Export is still a download action, not a hosted share flow.

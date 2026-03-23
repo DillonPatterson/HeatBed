@@ -1,36 +1,10 @@
 import { useEffect, useRef } from 'react';
+import { heatColorAt } from '../../lib/colors';
 import type { BlanketProfile, HeatField } from '../../types';
 
 interface HeatMapCanvasProps {
   heatField: HeatField;
   blanket: BlanketProfile;
-}
-
-// Richer dark-mode heat gradient: deep dark → electric blue → amber → orange → hot red/white
-const heatStops = [
-  { t: 0.00, r: 0,   g: 0,   b: 0,   a: 0 },
-  { t: 0.12, r: 10,  g: 20,  b: 60,  a: 0.25 },
-  { t: 0.28, r: 20,  g: 80,  b: 160, a: 0.55 },
-  { t: 0.46, r: 60,  g: 140, b: 220, a: 0.75 },
-  { t: 0.60, r: 220, g: 170, b: 40,  a: 0.88 },
-  { t: 0.74, r: 255, g: 110, b: 20,  a: 0.94 },
-  { t: 0.88, r: 255, g: 50,  b: 10,  a: 0.97 },
-  { t: 1.00, r: 255, g: 240, b: 220, a: 1.0 },
-];
-
-function heatColor(t: number): [number, number, number, number] {
-  const clamped = Math.max(0, Math.min(1, t));
-  const upper = heatStops.findIndex((s) => s.t >= clamped);
-  if (upper <= 0) return [heatStops[0].r, heatStops[0].g, heatStops[0].b, heatStops[0].a];
-  const lo = heatStops[upper - 1];
-  const hi = heatStops[upper];
-  const f = (clamped - lo.t) / (hi.t - lo.t || 1);
-  return [
-    Math.round(lo.r + (hi.r - lo.r) * f),
-    Math.round(lo.g + (hi.g - lo.g) * f),
-    Math.round(lo.b + (hi.b - lo.b) * f),
-    lo.a + (hi.a - lo.a) * f,
-  ];
 }
 
 export const HeatMapCanvas = ({ heatField, blanket }: HeatMapCanvasProps) => {
@@ -74,7 +48,7 @@ export const HeatMapCanvas = ({ heatField, blanket }: HeatMapCanvasProps) => {
       for (let col = 0; col < cols; col++) {
         const idx = row * cols + col;
         const v = heatField.field[idx] / maxV;
-        const [r, g, b, a] = heatColor(v);
+        const [r, g, b, a] = heatColorAt(v);
         const pix = (row * cols + col) * 4;
         data[pix] = r;
         data[pix + 1] = g;
