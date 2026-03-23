@@ -1,8 +1,10 @@
 import type { RefObject } from 'react';
-import { ControlPanel } from '../components/controls/ControlPanel';
+import { BedEnvironmentCard } from '../components/controls/BedEnvironmentCard';
+import { SelectedSleeperCard } from '../components/controls/SelectedSleeperCard';
+import { SleeperListCard } from '../components/controls/SleeperListCard';
 import { InsightsPanel } from '../components/insights/InsightsPanel';
 import { BedStage } from '../components/stage/BedStage';
-import { formatRange, toCelsius } from '../lib/units';
+import { formatRange } from '../lib/units';
 import type {
   BedSizeId,
   EnvironmentState,
@@ -55,6 +57,7 @@ export const AppShell = ({
   bedSizeId,
   blanketId,
   unit,
+  environment,
   sleepers,
   selectedSleeper,
   selectedSleeperId,
@@ -62,84 +65,104 @@ export const AppShell = ({
   heatField,
   insights,
   isExporting,
-  ...actions
-}: AppShellProps) => {
-  const ambientLabel =
-    actions.environment.unit === 'F'
-      ? `${Math.round(actions.environment.roomTempF)}F`
-      : `${Math.round(toCelsius(actions.environment.roomTempF))}C`;
-
-  return (
-    <div className="app-shell">
-      <header className="app-hero">
+  onSetBedSizeId,
+  onSetRoomTempF,
+  onSetBlanketId,
+  onSetUnit,
+  onExport,
+  onReset,
+  onSelectSleeper,
+  onAddSleeper,
+  onRemoveSleeper,
+  onUpdateBasics,
+  onSetType,
+  onSetBreed,
+  onApplyPosePreset,
+  onSetRotation,
+  onSetSegmentAngle,
+  onMoveSleeper,
+  onRotateSleeper,
+}: AppShellProps) => (
+  <div className="app-shell">
+    <header className="app-header">
+      <div className="app-logo">
+        <div className="app-logo-icon">~</div>
         <div>
-          <div className="hero-kicker">shared bed drama, visualized</div>
-          <h1 className="hero-title">Bed Heat Simulator</h1>
-          <p className="hero-copy">
-            Build the whole sleep mess, drag everybody into place, and watch the mattress reveal
-            who is turning the bed into a furnace.
-          </p>
+          <div className="app-logo-name">Bed Heat Simulator</div>
+          <div className="app-logo-sub">build the overheated bed</div>
         </div>
+      </div>
 
-        <div className="hero-badges">
-          <div className="hero-badge hero-badge-hot">
-            Hot side {formatRange(heatField.summary.hotspot.absoluteRangeF, unit)}
-          </div>
-          <div className="hero-badge">Room {ambientLabel}</div>
-          <div className="hero-badge">
-            {sleepers.length} sleeper{sleepers.length === 1 ? '' : 's'}
-          </div>
+      <div className="header-right">
+        <div className="badge badge-hot">
+          hotspot {formatRange(heatField.summary.hotspot.absoluteRangeF, unit)}
         </div>
-      </header>
+        <div className="unit-toggle">
+          {(['F', 'C'] as const).map((nextUnit) => (
+            <button
+              key={nextUnit}
+              type="button"
+              className={unit === nextUnit ? 'is-active' : ''}
+              onClick={() => onSetUnit(nextUnit)}
+            >
+              {nextUnit}
+            </button>
+          ))}
+        </div>
+        <button type="button" className="btn btn-ghost" onClick={onExport}>
+          {isExporting ? 'Exporting' : 'Export'}
+        </button>
+        <button type="button" className="btn btn-ghost" onClick={onReset}>
+          Reset
+        </button>
+      </div>
+    </header>
 
-      <main className="app-main">
-        <section className="stage-hero">
-          <BedStage
-            captureRef={captureRef}
-            svgRef={svgRef}
-            bedSizeId={bedSizeId}
-            blanketId={blanketId}
-            unit={unit}
-            sleepers={sleepers}
-            selectedSleeperId={selectedSleeperId}
-            worldSegmentsBySleeper={worldSegmentsBySleeper}
-            heatField={heatField}
-            onSelectSleeper={actions.onSelectSleeper}
-            onMoveSleeper={actions.onMoveSleeper}
-            onRotateSleeper={actions.onRotateSleeper}
-            onSegmentAngle={actions.onSetSegmentAngle}
-          />
-        </section>
+    <aside className="app-sidebar">
+      <BedEnvironmentCard
+        environment={environment}
+        bedSizeId={bedSizeId}
+        hotspotRangeF={heatField.summary.hotspot.absoluteRangeF}
+        onSetBedSizeId={onSetBedSizeId}
+        onSetRoomTempF={onSetRoomTempF}
+        onSetBlanketId={onSetBlanketId}
+        onSetUnit={onSetUnit}
+      />
+      <SleeperListCard
+        sleepers={sleepers}
+        selectedSleeperId={selectedSleeperId}
+        onSelectSleeper={onSelectSleeper}
+        onAddSleeper={onAddSleeper}
+        onRemoveSleeper={onRemoveSleeper}
+      />
+      <SelectedSleeperCard
+        sleeper={selectedSleeper}
+        onUpdateBasics={onUpdateBasics}
+        onSetType={onSetType}
+        onSetBreed={onSetBreed}
+        onApplyPosePreset={onApplyPosePreset}
+        onSetRotation={onSetRotation}
+        onSetSegmentAngle={onSetSegmentAngle}
+      />
+      <InsightsPanel heatField={heatField} insights={insights} unit={unit} />
+    </aside>
 
-        <section className="secondary-grid">
-          <ControlPanel
-            environment={actions.environment}
-            bedSizeId={bedSizeId}
-            sleepers={sleepers}
-            selectedSleeper={selectedSleeper}
-            selectedSleeperId={selectedSleeperId}
-            hotspotRangeF={heatField.summary.hotspot.absoluteRangeF}
-            onSetBedSizeId={actions.onSetBedSizeId}
-            onSetRoomTempF={actions.onSetRoomTempF}
-            onSetBlanketId={actions.onSetBlanketId}
-            onSetUnit={actions.onSetUnit}
-            onExport={actions.onExport}
-            onReset={actions.onReset}
-            isExporting={isExporting}
-            onSelectSleeper={actions.onSelectSleeper}
-            onAddSleeper={actions.onAddSleeper}
-            onRemoveSleeper={actions.onRemoveSleeper}
-            onUpdateBasics={actions.onUpdateBasics}
-            onSetType={actions.onSetType}
-            onSetBreed={actions.onSetBreed}
-            onApplyPosePreset={actions.onApplyPosePreset}
-            onSetRotation={actions.onSetRotation}
-            onSetSegmentAngle={actions.onSetSegmentAngle}
-          />
-
-          <InsightsPanel heatField={heatField} insights={insights} unit={unit} />
-        </section>
-      </main>
-    </div>
-  );
-};
+    <main className="app-stage">
+      <BedStage
+        captureRef={captureRef}
+        svgRef={svgRef}
+        bedSizeId={bedSizeId}
+        blanketId={blanketId}
+        unit={unit}
+        sleepers={sleepers}
+        selectedSleeperId={selectedSleeperId}
+        worldSegmentsBySleeper={worldSegmentsBySleeper}
+        heatField={heatField}
+        onSelectSleeper={onSelectSleeper}
+        onMoveSleeper={onMoveSleeper}
+        onRotateSleeper={onRotateSleeper}
+        onSegmentAngle={onSetSegmentAngle}
+      />
+    </main>
+  </div>
+);

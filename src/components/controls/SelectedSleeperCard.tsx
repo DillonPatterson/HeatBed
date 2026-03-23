@@ -26,10 +26,8 @@ export const SelectedSleeperCard = ({
 }: SelectedSleeperCardProps) => {
   if (!sleeper) {
     return (
-      <Panel title="Pick somebody" eyebrow="selected sleeper" accent="neutral">
-        <div className="helper-line">
-          Click a body on the bed or a card in the tray. That is where the extra tuning lives now.
-        </div>
+      <Panel title="Selected sleeper" eyebrow="quick edits" accent="neutral">
+        <div className="helper-line">Click a body on the bed to rename it, warm it up, or get picky with the pose.</div>
       </Panel>
     );
   }
@@ -44,9 +42,9 @@ export const SelectedSleeperCard = ({
   return (
     <Panel
       title={sleeper.name}
-      eyebrow="selected sleeper"
+      eyebrow="quick edits"
       accent="hot"
-      actions={<div className="hero-badge">{species.label}</div>}
+      actions={<div className="badge">{species.label}</div>}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
         <div className="mini-grid">
@@ -125,7 +123,7 @@ export const SelectedSleeperCard = ({
         </div>
 
         <details className="details-shell">
-          <summary>Pose and advanced tweaks</summary>
+          <summary>Advanced pose and breed tweaks</summary>
           <div className="details-body">
             {breedOptions.length > 0 ? (
               <label style={{ display: 'block' }}>

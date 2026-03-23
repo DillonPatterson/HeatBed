@@ -1,5 +1,6 @@
 import { defaultBedSizeId } from '../environment/defaults';
 import { getBedSize } from '../bed/bedUtils';
+import { getSleeperColor } from './sleeperColors';
 import { getDefaultBreedId, getPosePreset, getSpeciesProfile } from '../../simulation/presets/resolveSleeperPreset';
 import type { BedSizeId, Sleeper, SleeperType } from '../../types';
 
@@ -47,7 +48,7 @@ export const createSleeper = (
     root: overrides.root ?? { x: position.x, y: position.y },
     rotationDeg: overrides.rotationDeg ?? position.rotationDeg,
     blanketCoverage: overrides.blanketCoverage ?? species.defaultBlanketCoverage,
-    color: overrides.color ?? species.palette.body,
+    color: overrides.color ?? getSleeperColor(type),
   };
 };
 

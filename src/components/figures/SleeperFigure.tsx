@@ -172,7 +172,11 @@ export const SleeperFigure = ({
         x={centroid.x}
         y={centroid.y - 8.4}
         textAnchor="middle"
-        className="pointer-events-none fill-stone-900 font-mono text-[3.3px] font-semibold uppercase tracking-[0.7px]"
+        className="pointer-events-none font-mono text-[3.3px] font-semibold uppercase tracking-[0.7px]"
+        fill={selected ? '#fff9ed' : '#f3ece1'}
+        stroke="rgba(7, 9, 15, 0.96)"
+        strokeWidth={0.95}
+        paintOrder="stroke"
       >
         {sleeper.name}
       </text>

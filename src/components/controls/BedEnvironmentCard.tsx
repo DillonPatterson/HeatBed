@@ -12,9 +12,6 @@ interface BedEnvironmentCardProps {
   onSetRoomTempF: (roomTempF: number) => void;
   onSetBlanketId: (blanketId: string) => void;
   onSetUnit: (unit: UnitSystem) => void;
-  onExport: () => void;
-  onReset: () => void;
-  isExporting: boolean;
 }
 
 export const BedEnvironmentCard = ({
@@ -25,26 +22,19 @@ export const BedEnvironmentCard = ({
   onSetRoomTempF,
   onSetBlanketId,
   onSetUnit,
-  onExport,
-  onReset,
-  isExporting,
 }: BedEnvironmentCardProps) => (
   <Panel
-    title="Scene setup"
+    title="Setup"
     eyebrow="quick setup"
     accent="hot"
-    actions={<div className="hero-badge hero-badge-hot">{formatRange(hotspotRangeF, environment.unit)}</div>}
+    actions={<div className="badge badge-hot">{formatRange(hotspotRangeF, environment.unit)}</div>}
   >
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-      <div className="subtle-card">
-        <div className="tiny-label">Right now</div>
-        <div className="mini-headline">Warmest patch: {formatRange(hotspotRangeF, environment.unit)}</div>
-        <div className="helper-line">Pick the bed, pick the blanket, then let the stage do the rest.</div>
-      </div>
+      <div className="helper-line">Pick the mattress, pick the blanket, then start dropping bodies.</div>
 
       <div className="mini-grid">
         <label>
-          <div className="tiny-label">Bed size</div>
+          <div className="tiny-label">Bed</div>
           <select value={bedSizeId} onChange={(event) => onSetBedSizeId(event.target.value as BedSizeId)} className="field">
             {bedSizes.map((bed) => (
               <option key={bed.id} value={bed.id}>
@@ -67,7 +57,7 @@ export const BedEnvironmentCard = ({
       </div>
 
       <details className="details-shell">
-        <summary>Room and units</summary>
+        <summary>Room temp and units</summary>
         <div className="details-body">
           <label style={{ display: 'block' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '0.4rem' }}>
@@ -87,7 +77,7 @@ export const BedEnvironmentCard = ({
 
           <div>
             <div className="tiny-label" style={{ marginBottom: '0.45rem' }}>
-              Display unit
+              Unit
             </div>
             <div className="segmented">
               {(['F', 'C'] as const).map((nextUnit) => (
@@ -104,15 +94,6 @@ export const BedEnvironmentCard = ({
           </div>
         </div>
       </details>
-
-      <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
-        <button type="button" className="action-btn primary" onClick={onExport}>
-          {isExporting ? 'Exporting...' : 'Export image'}
-        </button>
-        <button type="button" className="action-btn secondary" onClick={onReset}>
-          Reset bed
-        </button>
-      </div>
     </div>
   </Panel>
 );

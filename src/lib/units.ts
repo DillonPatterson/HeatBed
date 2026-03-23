@@ -18,12 +18,12 @@ export const rangeToUnit = (rangeF: TemperatureRangeF, unit: UnitSystem) =>
 
 export const formatRange = (rangeF: TemperatureRangeF, unit: UnitSystem) => {
   const range = rangeToUnit(rangeF, unit);
-  return `${range.min}-${range.max}°${unit}`;
+  return `${range.min}-${range.max}\u00B0${unit}`;
 };
 
 export const formatDeltaRange = (rangeF: TemperatureRangeF, unit: UnitSystem) => {
   const range = rangeToUnit(rangeF, unit);
-  return `+${range.min}-${range.max}°${unit} above ambient`;
+  return `+${range.min}-${range.max}\u00B0${unit} above ambient`;
 };
 
 export const formatDualRange = (rangeF: TemperatureRangeF, primaryUnit: UnitSystem) => {

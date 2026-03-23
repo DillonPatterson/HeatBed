@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { defaultBedSizeId, defaultEnvironment } from '../features/environment/defaults';
 import { getBedSize } from '../features/bed/bedUtils';
+import { getSleeperColor, normalizeSleeperColor } from '../features/sleepers/sleeperColors';
 import { createDefaultSleepers, createSleeper } from '../features/sleepers/sleeperFactory';
 import { clamp } from '../lib/geometry';
 import { getDefaultBreedId, getPosePreset, getSpeciesProfile } from '../simulation/presets/resolveSleeperPreset';
@@ -25,6 +26,7 @@ interface AppState {
   ) => void;
   setSleeperType: (id: string, type: SleeperType) => void;
   setSleeperBreed: (id: string, breedId?: string) => void;
+  setSleeperColor: (id: string, color: string) => void;
   applyPosePreset: (id: string, posePresetId: string) => void;
   setSegmentAngle: (id: string, segmentId: string, angle: number) => void;
   setSleeperPosition: (id: string, root: Point) => void;
@@ -37,7 +39,7 @@ type PersistedAppState = Pick<
   'bedSizeId' | 'environment' | 'sleepers' | 'selectedSleeperId'
 >;
 
-const STORE_VERSION = 2;
+const STORE_VERSION = 3;
 
 const clampSleeperWeight = (weightLb: number, type: SleeperType) => {
   const profile = getSpeciesProfile(type);
@@ -72,7 +74,7 @@ const normalizePersistedSleeper = (sleeper: Sleeper, bedSizeId: BedSizeId): Slee
       ...sleeper.poseState,
     },
     blanketCoverage: sleeper.blanketCoverage ?? species.defaultBlanketCoverage,
-    color: species.palette.body,
+    color: normalizeSleeperColor(sleeper.type, sleeper.color),
     root: {
       x: clamp(
         Number.isFinite(sleeper.root?.x) ? sleeper.root.x : bed.widthIn / 2,
@@ -193,7 +195,7 @@ export const useAppStore = create<AppState>()(
               blanketCoverage: species.defaultBlanketCoverage,
               posePresetId: pose.id,
               poseState: { ...pose.segmentAngles },
-              color: species.palette.body,
+              color: getSleeperColor(type),
             };
           }),
         })),
@@ -202,6 +204,13 @@ export const useAppStore = create<AppState>()(
           ...state,
           sleepers: state.sleepers.map((sleeper) =>
             sleeper.id === id ? { ...sleeper, breedId: breedId ?? sleeper.breedId } : sleeper,
+          ),
+        })),
+      setSleeperColor: (id, color) =>
+        set((state) => ({
+          ...state,
+          sleepers: state.sleepers.map((sleeper) =>
+            sleeper.id === id ? { ...sleeper, color: normalizeSleeperColor(sleeper.type, color) } : sleeper,
           ),
         })),
       applyPosePreset: (id, posePresetId) =>

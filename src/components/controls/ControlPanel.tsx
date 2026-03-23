@@ -21,9 +21,6 @@ interface ControlPanelProps {
   onSetRoomTempF: (roomTempF: number) => void;
   onSetBlanketId: (blanketId: string) => void;
   onSetUnit: (unit: UnitSystem) => void;
-  onExport: () => void;
-  onReset: () => void;
-  isExporting: boolean;
   onSelectSleeper: (id: string) => void;
   onAddSleeper: (type: SleeperType) => void;
   onRemoveSleeper: (id: string) => void;
@@ -49,9 +46,6 @@ export const ControlPanel = (props: ControlPanelProps) => (
         onSetRoomTempF={props.onSetRoomTempF}
         onSetBlanketId={props.onSetBlanketId}
         onSetUnit={props.onSetUnit}
-        onExport={props.onExport}
-        onReset={props.onReset}
-        isExporting={props.isExporting}
       />
 
       <SleeperListCard

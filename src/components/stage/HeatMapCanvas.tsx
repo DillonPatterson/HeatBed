@@ -97,6 +97,7 @@ export const HeatMapCanvas = ({ heatField, blanket }: HeatMapCanvasProps) => {
       style={{
         position: 'absolute',
         inset: 0,
+        zIndex: 2,
         width: '100%',
         height: '100%',
         borderRadius: 'inherit',

@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 import { blanketProfiles } from '../../data/blankets/blankets';
 import { bedSizes } from '../../data/beds/bedSizes';
-import { formatDualRange, formatRange } from '../../lib/units';
+import { formatDualRange } from '../../lib/units';
 import type { BedSizeId, HeatField, Sleeper, UnitSystem, WorldSegment } from '../../types';
 import { SleeperFigure } from '../figures/SleeperFigure';
 import { HeatMapCanvas } from './HeatMapCanvas';
@@ -43,90 +43,92 @@ export const BedStage = ({
 
   return (
     <div ref={captureRef} className="stage-shell">
-      <div className="stage-top">
-        <div>
-          <div className="hero-kicker">build the overheated bed</div>
-          <h2 className="stage-title">Drag sleepers around and watch the hot side take shape.</h2>
-          <p className="stage-copy">
-            People, kids, dogs, cats. Spread them out for a truce or stack them up until the bed
-            starts feeling unfair.
-          </p>
-        </div>
+      <div className="stage-header">
+        <div className="stage-title">drag bodies around and let the mattress tell on everybody</div>
 
-        <div className="stage-chip-row">
-          <div className="hero-badge hero-badge-hot">
-            Hot {formatRange(heatField.summary.hotspot.absoluteRangeF, unit)}
-          </div>
-          <div className="hero-badge">{blanket.label}</div>
-          <div className="hero-badge">
+        <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+          <div className="badge">{bed.label}</div>
+          <div className="badge">{blanket.label}</div>
+          <div className="badge">
             {sleepers.length} sleeper{sleepers.length === 1 ? '' : 's'}
           </div>
         </div>
       </div>
 
       <div className="stage-scene">
-        <div className="bed-shell">
-          <div style={{ width: 'min(100%, 1040px)', maxHeight: '100%' }}>
-            <div className="bed-mattress" style={{ aspectRatio: `${bed.widthIn} / ${bed.lengthIn}` }}>
-              <div className="bed-pillows">
-                <div className="bed-pillow" />
-                <div className="bed-pillow" />
-              </div>
+        <div className="bed-wrap" style={{ width: 'min(100%, 960px)', maxHeight: '100%' }}>
+          <div className="bed-headboard" aria-hidden="true">
+            <div className="headboard-post" />
+            <div className="headboard-post" />
+            <div className="headboard-post" />
+          </div>
 
-              <div className="bed-grid" />
-              <HeatMapCanvas heatField={heatField} blanket={blanket} />
+          <div className="bed-mattress" style={{ aspectRatio: `${bed.widthIn} / ${bed.lengthIn}` }}>
+            <div className="bed-pillows" aria-hidden="true">
+              <div className="bed-pillow" />
+              <div className="bed-pillow" />
+            </div>
 
-              <svg
-                ref={svgRef}
-                viewBox={`0 0 ${bed.widthIn} ${bed.lengthIn}`}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                }}
-                role="img"
-                aria-label="Interactive bed stage"
-              >
-                {sleepers.map((sleeper) => (
-                  <SleeperFigure
-                    key={sleeper.id}
-                    sleeper={sleeper}
-                    segments={worldSegmentsBySleeper[sleeper.id] ?? []}
-                    svgRef={svgRef}
-                    bedWidthIn={bed.widthIn}
-                    bedLengthIn={bed.lengthIn}
-                    selected={selectedSleeperId === sleeper.id}
-                    onSelect={() => onSelectSleeper(sleeper.id)}
-                    onMove={(point) => onMoveSleeper(sleeper.id, point)}
-                    onRotate={(angleDeg) => onRotateSleeper(sleeper.id, angleDeg)}
-                    onSegmentAngle={(segmentId, angle) => onSegmentAngle(sleeper.id, segmentId, angle)}
-                  />
-                ))}
-              </svg>
+            <div className="bed-grid" />
+            <HeatMapCanvas heatField={heatField} blanket={blanket} />
 
-              <div className="bed-size-label">
-                {bed.label} {bed.widthIn}" x {bed.lengthIn}"
-              </div>
+            <svg
+              ref={svgRef}
+              viewBox={`0 0 ${bed.widthIn} ${bed.lengthIn}`}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 3,
+                width: '100%',
+                height: '100%',
+              }}
+              role="img"
+              aria-label="Interactive bed stage"
+            >
+              {sleepers.map((sleeper) => (
+                <SleeperFigure
+                  key={sleeper.id}
+                  sleeper={sleeper}
+                  segments={worldSegmentsBySleeper[sleeper.id] ?? []}
+                  svgRef={svgRef}
+                  bedWidthIn={bed.widthIn}
+                  bedLengthIn={bed.lengthIn}
+                  selected={selectedSleeperId === sleeper.id}
+                  onSelect={() => onSelectSleeper(sleeper.id)}
+                  onMove={(point) => onMoveSleeper(sleeper.id, point)}
+                  onRotate={(angleDeg) => onRotateSleeper(sleeper.id, angleDeg)}
+                  onSegmentAngle={(segmentId, angle) => onSegmentAngle(sleeper.id, segmentId, angle)}
+                />
+              ))}
+            </svg>
+
+            <div className="bed-size-label">
+              {bed.label} {bed.widthIn}" x {bed.lengthIn}"
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="stage-floating">
-          <div className="overlay-card">
-            <div className="tiny-label">Warmest patch</div>
-            <div className="mini-headline">{formatDualRange(heatField.summary.hotspot.absoluteRangeF, unit)}</div>
-            <div className="helper-line">{heatField.summary.hotspot.zoneLabel}</div>
-          </div>
+      <div className="stage-strip">
+        <div className="strip-card">
+          <div className="stat-label">Warmest zone</div>
+          <div className="stat-value hot">{formatDualRange(heatField.summary.hotspot.absoluteRangeF, unit)}</div>
+          <div className="stat-note">{heatField.summary.hotspot.zoneLabel}</div>
+        </div>
 
-          <div className="overlay-card overlay-card-wide">
-            <div className="tiny-label">
-              {selectedSleeper ? `Selected: ${selectedSleeper.name}` : 'Quick tip'}
-            </div>
-            <div className="helper-line">
-              Drag a body to move it. Grab the top dot to rotate. Open the extra controls only when
-              you want to get picky.
-            </div>
+        <div className="strip-card">
+          <div className="stat-label">Coolest zone</div>
+          <div className="stat-value cool">{formatDualRange(heatField.summary.coolspot.absoluteRangeF, unit)}</div>
+          <div className="stat-note">{heatField.summary.coolspot.zoneLabel}</div>
+        </div>
+
+        <div className="strip-card">
+          <div className="stat-label">{selectedSleeper ? 'Selected' : 'Contact'}</div>
+          <div className="stat-value">{selectedSleeper ? selectedSleeper.name : Math.round(heatField.summary.overlapCount)}</div>
+          <div className="stat-note">
+            {selectedSleeper
+              ? 'Drag to move, top handle to rotate, and tune the details on the left.'
+              : `${Math.round(heatField.summary.overlapCount)} overlap boosts in the pile`}
           </div>
         </div>
       </div>

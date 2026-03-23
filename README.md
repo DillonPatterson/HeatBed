@@ -4,17 +4,24 @@ Bed Heat Simulator is a dark, playful web app for building an overheated sleep s
 
 Drag adults, kids, dogs, and cats onto the bed, pile them up, and watch the live heat map react in real time.
 
-## Recommended Local Launch On Windows
+## Click-To-Open Local Version
 
-Double-click [Launch-BedHeatSimulator.cmd](C:\Users\dillo\Desktop\BedHeatMap\Launch-BedHeatSimulator.cmd).
+Run this once whenever you want a fresh standalone file:
 
-That launcher:
+```bash
+npm install
+npm run build
+```
 
-- opens the repo at `C:\Users\dillo\Desktop\BedHeatMap`
-- starts the local app server if it is not already running
-- opens the simulator in your browser automatically
+That build now generates [launch.html](C:\Users\dillo\Desktop\BedHeatMap\launch.html) in the repo root.
 
-This is the easiest way to use the app locally.
+After that, double-click [launch.html](C:\Users\dillo\Desktop\BedHeatMap\launch.html) from Windows Explorer. It opens with `file://` and does not need `npm run dev` or a local web server.
+
+## Windows Launcher
+
+If you want the live dev version instead, double-click [Launch-BedHeatSimulator.cmd](C:\Users\dillo\Desktop\BedHeatMap\Launch-BedHeatSimulator.cmd).
+
+That launcher starts Vite locally and opens the app in your browser automatically.
 
 ## Dev Mode
 
@@ -28,6 +35,8 @@ npm run dev
 ```bash
 npm run build
 ```
+
+`npm run build` also regenerates the standalone [launch.html](C:\Users\dillo\Desktop\BedHeatMap\launch.html).
 
 ## Product Shape
 
